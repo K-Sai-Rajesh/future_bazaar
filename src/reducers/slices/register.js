@@ -10,13 +10,11 @@ export const Register = createAsyncThunk(
   async (params, { rejectWithValue, dispatch }) => {
     try {
       dispatch(loadon(true));
-      console.log(params);
       const url = `${config.BASE_API}/register`;
       const response = await client.post(url, params);
       return Promise.resolve(response);
     } catch (error) {
       dispatch(snackon(error));
-      console.log(error);
       if (error === "Invalid token ! Please Login.") {
         clearSession(true);
       }
@@ -38,9 +36,9 @@ export const UpdateProfile = createAsyncThunk(
     } catch (error) {
       dispatch(snackon(error));
       console.log(error);
-      if (error === "Invalid token ! Please Login.") {
-        clearSession(true);
-      }
+      // if (error === "Invalid token ! Please Login.") {
+      //   clearSession(true);
+      // }
       return rejectWithValue(error);
     } finally {
       dispatch(loadoff(false));
@@ -57,14 +55,14 @@ const registerSlice = createSlice({
       .addCase(Register.pending, (state) => {
         state.loading = true;
       })
-      .addCase(Register.fulfilled, (state, payload) => {})
+      .addCase(Register.fulfilled, () => {})
       .addCase(Register.rejected, (state) => {
         state.loading = false;
       })
       .addCase(UpdateProfile.pending, (state) => {
         state.loading = true;
       })
-      .addCase(UpdateProfile.fulfilled, (state, payload) => {})
+      .addCase(UpdateProfile.fulfilled, () => {})
       .addCase(UpdateProfile.rejected, (state) => {
         state.loading = false;
       });

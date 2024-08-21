@@ -10,9 +10,9 @@ const snackSlice = createSlice({
   },
   reducers: {
     snackon: (state, actions) => {
-      if (actions.payload === "Invalid token ! Please Login.") {
-        clearSession(true);
-      }
+      // if (actions.payload === "Invalid token ! Please Login.") {
+      //   clearSession(true);
+      // }
       return {
         ...state,
         message: actions.payload,

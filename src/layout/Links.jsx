@@ -2,7 +2,7 @@ import { Breadcrumbs, Button, Typography } from '@mui/material'
 import * as React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
-const links = ["", 'learning program', 'about us', 'admission']
+const links = [""]
 
 function Links() {
     const navigate = useNavigate();
@@ -47,6 +47,7 @@ function Links() {
                         borderWidth: 2,
                         fontWeight: 'bold'
                     }}
+                    onClick={() => navigate('/register')}
                 >register as Seller</Button>
                 <Button
                     disableElevation
