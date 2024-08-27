@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Avatar, Dialog, DialogContent, Grid, IconButton, Paper, Slide } from '@mui/material'
-import logo from '../assets/images/template.svg'
+import logo from '../assets/images/futurebazaar.png'
 import Links from './Links'
 import { WidgetsOutlined } from '@mui/icons-material';
 

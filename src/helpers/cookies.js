@@ -1,9 +1,9 @@
 import { deleteCookie, getCookies, setCookie } from 'cookies-next'
 
 export const CookiesNames = {
-    ACCESS_TOKEN: "erp.token",
-    REFRESH_TOKEN: "erp.refreshtoen",
-    USER: "erp.user"
+    ACCESS_TOKEN: "future_bazaar.token",
+    REFRESH_TOKEN: "future_bazaar.refreshtoen",
+    USER: "future_bazaar.user"
 }
 
 export function getTokenExpiry() {

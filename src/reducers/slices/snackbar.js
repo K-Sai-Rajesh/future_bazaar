@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { clearSession } from "../../helpers/cookies";
 
 const snackSlice = createSlice({
   name: "register",
@@ -10,9 +9,6 @@ const snackSlice = createSlice({
   },
   reducers: {
     snackon: (state, actions) => {
-      // if (actions.payload === "Invalid token ! Please Login.") {
-      //   clearSession(true);
-      // }
       return {
         ...state,
         message: actions.payload,

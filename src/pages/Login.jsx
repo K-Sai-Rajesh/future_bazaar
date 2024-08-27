@@ -13,13 +13,23 @@ import CustomInputField from '../common/CustomInputField';
 import { IconButton, InputAdornment, Paper } from '@mui/material';
 import { useFormik } from 'formik'
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useDispatch } from 'react-redux';
+import { signIn } from '../reducers/slices/login';
+import { useNavigate } from 'react-router-dom';
+import { snackon } from '../reducers/slices/snackbar';
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
 export default function Login() {
     const [show, setShow] = React.useState(false)
-    const handleSubmit = () => {
-        console.log(register?.values);
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const handleSubmit = async () => {
+        const { payload } = await dispatch(signIn(register?.values))
+        if (payload?.message === "Login Successful !") {
+            dispatch(snackon(payload?.message));
+            navigate('/dashboard')
+        }
     };
     const register = useFormik({
         initialValues: {
@@ -135,7 +145,7 @@ export default function Login() {
                             </Grid>
                         </Grid>
                         <Button
-                            type="submit"
+                            // type="submit"
                             fullWidth
                             variant="contained"
                             size='small'

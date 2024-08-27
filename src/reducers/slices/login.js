@@ -10,7 +10,6 @@ export const signIn = createAsyncThunk(
     async (params, { rejectWithValue, dispatch }) => {
         try {
             dispatch(loadon(true));
-            console.log(params)
             const url = `${config.BASE_API}/login`; 
             const response = await client.post(url, params);
             setSession(response);

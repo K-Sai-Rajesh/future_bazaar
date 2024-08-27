@@ -1,7 +1,7 @@
-export async function Login({ username, password, db }) {
+export async function Login({ email, password, db }) {
     return new Promise((resolve, reject) => {
         try{
-            let query = `select * from login where username="${username}" and password="${password}";`
+            let query = `select * from Login where username="${email}" and password="${password}";`
             db.all(query, (err, row) => {
                 if (err) {
                     console.error(err.message);

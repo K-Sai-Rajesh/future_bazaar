@@ -11,19 +11,24 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Paper from "@mui/material/Paper";
 import { IconButton, Typography } from "@mui/material";
 import {
+  ApprovalOutlined,
+  BlockOutlined,
   ClassOutlined,
-  EditAttributesOutlined,
+  CloseOutlined,
   SchoolOutlined,
 } from "@mui/icons-material";
 import { CookiesNames, getCookieItem } from "../helpers/cookies";
 import { format } from "date-fns";
 
 export default function EnhancedTable({
+  status,
   rows,
   headCells,
   setEdit,
   icon,
   actions,
+  rejectSeller,
+  acceptSeller
 }) {
   const { role } = JSON.parse(
     decodeURIComponent(getCookieItem(CookiesNames.USER))
@@ -67,7 +72,7 @@ export default function EnhancedTable({
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%" }} elevation={0}>
-        <TableContainer sx={{ height: "65vh" }}>
+        <TableContainer sx={{ height: "60vh" }}>
           <Table aria-labelledby="tableTitle">
             <TableHead>
               <TableRow>
@@ -96,7 +101,7 @@ export default function EnhancedTable({
                   </TableCell>
                 ))}
                 {actions && (
-                  <TableCell align={"left"}>
+                  <TableCell align={"center"}>
                     <TableSortLabel>
                       <Typography
                         sx={{
@@ -107,9 +112,8 @@ export default function EnhancedTable({
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
-                          visibility: `${
-                            role === "Student" ? "hidden" : "visible"
-                          }`,
+                          visibility: `${role === "Student" ? "hidden" : "visible"
+                            }`,
                         }}
                       >
                         Action
@@ -181,14 +185,10 @@ export default function EnhancedTable({
                         )}
                         {headCells?.map((item, idx) => {
                           const value = item?.label?.includes("Date")
-                            ? format(
-                                new Date(row[item?.id]),
-                                "eeee, dd LLLL yyyy"
-                              )
-                            : item?.label === "Status"
-                            ? row[item?.id] === 1
-                              ? "done"
-                              : "pending"
+                            ? row[item?.id] === null ? "Please Approve !" : format(
+                              new Date(row[item?.id]),
+                              "eeee, dd LLLL yyyy"
+                            )
                             : row[item?.id];
 
                           return (
@@ -204,13 +204,14 @@ export default function EnhancedTable({
                                   fontSize: "12px",
                                   fontFamily: "Raleway",
                                   fontWeight: "bold",
-                                  textTransform: "capitalize",
-                                  color:
-                                    item?.label === "Status"
-                                      ? row[item?.id] === 1
-                                        ? "#00398D"
-                                        : "#D32F2F"
-                                      : "#3F3D56",
+                                  textTransform: item?.id === "email" ? "" : "capitalize",
+                                  color: row[item?.id] === "Approved"
+                                    ? "#00398D"
+                                    : row[item?.id] === "Rejected" ?
+                                      "#D32F2F"
+                                      : row[item?.id] === "Pending" ?
+                                        "#8921C7"
+                                        : "",
                                   overflow: "hidden",
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
@@ -223,16 +224,36 @@ export default function EnhancedTable({
                         })}
                         {actions && (
                           <TableCell
-                            align={"left"}
+                            align={"center"}
                             sx={{
-                              visibility: `${
-                                role === "Student" ? "hidden" : "visible"
-                              }`,
+                              visibility: `${role === "Student" ? "hidden" : "visible"
+                                }`,
                             }}
                           >
-                            <IconButton onClick={() => setEdit(row)}>
-                              <EditAttributesOutlined color="info" />
-                            </IconButton>
+                            {
+                              status === "Approved" ?
+                                <>
+                                  <IconButton onClick={() => rejectSeller(row)}>
+                                    <BlockOutlined color="error" />
+                                  </IconButton>
+                                </>
+                                :
+                                status === "Pending" ?
+                                  <>
+                                    <IconButton onClick={() => acceptSeller(row)}>
+                                      <ApprovalOutlined color="info" />
+                                    </IconButton>
+                                    <IconButton onClick={() => rejectSeller(row)}>
+                                      <CloseOutlined color="error" />
+                                    </IconButton>
+                                  </>
+                                  :
+                                  <>
+                                    <IconButton onClick={() => acceptSeller(row)}>
+                                      <ApprovalOutlined color="info" />
+                                    </IconButton>
+                                  </>
+                            }
                           </TableCell>
                         )}
                       </TableRow>
@@ -257,6 +278,6 @@ export default function EnhancedTable({
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-    </Box>
+    </Box >
   );
 }

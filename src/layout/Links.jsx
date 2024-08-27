@@ -2,7 +2,7 @@ import { Breadcrumbs, Button, Typography } from '@mui/material'
 import * as React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
-const links = [""]
+const links = ["", "categories"]
 
 function Links() {
     const navigate = useNavigate();

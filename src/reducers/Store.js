@@ -3,6 +3,7 @@ import loginReducer from "./slices/login";
 import registerReducer from "./slices/register";
 import snackReducer from "./slices/snackbar";
 import loadingReducer from "./slices/loading";
+import adminReducer from "./slices/admin";
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     register: registerReducer,
     snack: snackReducer,
     load: loadingReducer,
+    admin: adminReducer
   },
 });

@@ -7,7 +7,7 @@ function Dashboard() {
   return (
     <>
       <DashboardNav />
-      <Grid container mt={"90px"}>
+      <Grid container mt={"90px"} px={2}>
         <Outlet />
       </Grid>
     </>

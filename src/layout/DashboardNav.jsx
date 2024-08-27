@@ -9,7 +9,7 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import logo from "../assets/images/template.svg";
+import logo from "../assets/images/futurebazaar.png";
 import { MoreVertOutlined } from "@mui/icons-material";
 import { NavLink, useLocation } from "react-router-dom";
 import { CookiesNames, clearSession, getCookieItem } from "../helpers/cookies";
@@ -22,12 +22,7 @@ function DashboardNav() {
   const { name, role } = JSON.parse(
     decodeURIComponent(getCookieItem(CookiesNames.USER))
   );
-  const links =
-    role === "Student"
-      ? ["results", "tasks"]
-      : role === "Admin"
-      ? ["profiles", "classes"]
-      : ["profiles", "classes", "results", "tasks"];
+  const links = ["shop", "catalog"];
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -141,6 +136,7 @@ function DashboardNav() {
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
               >
                 <Box display={"flex"} flexDirection={"column"} rowGap={1}>
+
                   <NavLink
                     to={`/dashboard`}
                     exact
@@ -158,6 +154,7 @@ function DashboardNav() {
                       Dashboard
                     </Typography>
                   </NavLink>
+
                   {links?.map((item, idx) => {
                     return (
                       <NavLink
