@@ -12,7 +12,7 @@ import Copyright from './CopyRight';
 import CustomInputField from '../common/CustomInputField';
 import { IconButton, InputAdornment, Paper } from '@mui/material';
 import { useFormik } from 'formik'
-import { Visibility, VisibilityOff, VisibilityOffOutlined, VisibilityOutlined } from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { Register } from '../reducers/slices/register';
 import { snackon } from '../reducers/slices/snackbar';
@@ -32,6 +32,7 @@ export default function SignUp() {
             console.error(e)
         }
     };
+    // eslint-disable-next-line
     const formKeys = [
         {
             id: "firstname",
@@ -99,7 +100,7 @@ export default function SignUp() {
             type: 'password',
             colSize: 6
         },
-    ]
+    ] 
     const [initialValues, setInitialValues] = React.useState({})
     const [initialSchema, setInitialSchema] = React.useState({})
 
@@ -113,6 +114,7 @@ export default function SignUp() {
     React.useEffect(() => {
         let initial = {}
         let validateSchema = {}
+        // eslint-disable-next-line
         formKeys?.map(keys => {
             initial[keys?.id] = ""
             validateSchema[keys?.id] =
@@ -125,7 +127,8 @@ export default function SignUp() {
         })
         setInitialValues(initial)
         setInitialSchema(validateSchema)
-    }, [])
+        // eslint-disable-next-line
+    }, [formKeys])
 
     return (
         <Grid

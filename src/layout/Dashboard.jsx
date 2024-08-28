@@ -7,7 +7,12 @@ function Dashboard() {
   return (
     <>
       <DashboardNav />
-      <Grid container mt={"90px"} px={2}>
+      <Grid
+        container
+        mt={"90px"}
+        px={2}
+        justifyContent={'center'}
+      >
         <Outlet />
       </Grid>
     </>

@@ -9,16 +9,20 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Paper from "@mui/material/Paper";
-import { IconButton, Typography } from "@mui/material";
+import { Avatar, IconButton, Typography } from "@mui/material";
 import {
   ApprovalOutlined,
   BlockOutlined,
   ClassOutlined,
   CloseOutlined,
+  DeleteForeverOutlined,
+  EditNoteOutlined,
   SchoolOutlined,
+  VisibilityOutlined,
 } from "@mui/icons-material";
 import { CookiesNames, getCookieItem } from "../helpers/cookies";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 export default function EnhancedTable({
   status,
@@ -36,7 +40,7 @@ export default function EnhancedTable({
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
+  const navigate = useNavigate()
   const handleClick = (event, id) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected = [];
@@ -199,26 +203,37 @@ export default function EnhancedTable({
                               scope="row"
                               align="left"
                             >
-                              <Typography
-                                sx={{
-                                  fontSize: "12px",
-                                  fontFamily: "Raleway",
-                                  fontWeight: "bold",
-                                  textTransform: item?.id === "email" ? "" : "capitalize",
-                                  color: row[item?.id] === "Approved"
-                                    ? "#00398D"
-                                    : row[item?.id] === "Rejected" ?
-                                      "#D32F2F"
-                                      : row[item?.id] === "Pending" ?
-                                        "#8921C7"
-                                        : "",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
-                              >
-                                {value}
-                              </Typography>
+                              {
+                                item?.id === "path" ?
+                                  <>
+                                    <Avatar
+                                      alt={row[item?.id]}
+                                      src={`http://localhost:8080/${row[item?.id]}`}
+                                      sx={{ width: 46, height: 46 }}
+                                    />
+                                  </>
+                                  :
+                                  <Typography
+                                    sx={{
+                                      fontSize: "12px",
+                                      fontFamily: "Raleway",
+                                      fontWeight: "bold",
+                                      textTransform: item?.id === "email" ? "" : "capitalize",
+                                      color: row[item?.id] === "Approved"
+                                        ? "#00398D"
+                                        : row[item?.id] === "Rejected" ?
+                                          "#D32F2F"
+                                          : row[item?.id] === "Pending" ?
+                                            "#8921C7"
+                                            : "",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      whiteSpace: "nowrap",
+                                    }}
+                                  >
+                                    {value}
+                                  </Typography>
+                              }
                             </TableCell>
                           );
                         })}
@@ -248,14 +263,25 @@ export default function EnhancedTable({
                                     </IconButton>
                                   </>
                                   :
-                                  <>
-                                    <IconButton onClick={() => acceptSeller(row)}>
-                                      <ApprovalOutlined color="info" />
-                                    </IconButton>
-                                  </>
+                                  status === "Product" ?
+                                    <>
+                                      <IconButton onClick={() => navigate('/dashboard/product', { state: row?.productId })}>
+                                        <VisibilityOutlined color="info" />
+                                      </IconButton>
+                                      <IconButton onClick={() => navigate('/dashboard/edit product', { state: row?.productId })}>
+                                        <EditNoteOutlined color="primary" />
+                                      </IconButton>
+                                      <IconButton onClick={() => navigate('/dashboard/product', { state: row?.productId })}>
+                                        <DeleteForeverOutlined color="error" />
+                                      </IconButton>
+                                    </>
+                                    :
+                                    <>
+                                    </>
                             }
                           </TableCell>
-                        )}
+                        )
+                        }
                       </TableRow>
                     );
                   })

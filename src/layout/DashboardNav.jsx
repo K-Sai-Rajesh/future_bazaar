@@ -22,7 +22,7 @@ function DashboardNav() {
   const { name, role } = JSON.parse(
     decodeURIComponent(getCookieItem(CookiesNames.USER))
   );
-  const links = ["shop", "catalog"];
+  const links = ["shop", "catalog", 'products'];
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

@@ -7,7 +7,10 @@ import SignUp from "../pages/Register";
 import Auth from "./Auth";
 import LandingPage from "../pages/LandingPage";
 import AdminPanel from "../pages/AdminPanel";
-import SellerDashboard from "../pages/SellerDashboard";
+// import SellerDashboard from "../pages/AddProduct";
+import Products from "../pages/Products";
+import AddNewProduct from "../pages/AddProduct";
+import Product from "../pages/Product";
 // import RegisterPage from "../pages/Register"`;
 // import NotFound from "../pages/404";
 
@@ -37,16 +40,28 @@ export const routes = [
         <Outlet />
       </Auth>
     ),
-  children: [
-    {
-      path: "",
-      element: <AdminPanel />,
-    },
-    {
-      path: "seller",
-      element: <SellerDashboard />,
-    },
-  ],
+    children: [
+      {
+        path: "",
+        element: <AdminPanel />,
+      },
+      {
+        path: "add product",
+        element: <AddNewProduct />,
+      },
+      {
+        path: "edit product",
+        element: <AddNewProduct />,
+      },
+      {
+        path: "products",
+        element: <Products />
+      },
+      {
+        path: "product",
+        element: <Product />
+      }
+    ],
   },
   {
     path: "404",
