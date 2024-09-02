@@ -11,6 +11,9 @@ import AdminPanel from "../pages/AdminPanel";
 import Products from "../pages/Products";
 import AddNewProduct from "../pages/AddProduct";
 import Product from "../pages/Product";
+import MapLocation from "../pages/Map";
+import PeerLocation from "../pages/PeerLocation";
+import Shop from "../pages/Shop";
 // import RegisterPage from "../pages/Register"`;
 // import NotFound from "../pages/404";
 
@@ -32,6 +35,14 @@ export const routes = [
   {
     path: "register",
     element: <SignUp />,
+  },
+  {
+    path: 'location',
+    element: <PeerLocation />
+  },
+  {
+    path: 'map',
+    element: <MapLocation />
   },
   {
     path: "/dashboard",
@@ -60,6 +71,10 @@ export const routes = [
       {
         path: "product",
         element: <Product />
+      },
+      {
+        path: "shop",
+        element: <Shop />
       }
     ],
   },

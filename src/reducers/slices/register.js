@@ -45,12 +45,46 @@ export const UpdateProfile = createAsyncThunk(
   }
 );
 
+export const GetLocation = createAsyncThunk(
+  "GetLocation",
+  async (params, { rejectWithValue, dispatch }) => {
+    try {
+      const result = await (await fetch('https://api.ipify.org?format=json')).json()
+      // .then(response => response.json())
+      // .then(data => {
+      //   console.log('Your Public IP Address:', data.ip);
+      // })
+      // .catch(error => {
+      //   console.error('Error fetching IP:', error);
+      // });
+      console.log(result)
+      const url = `${config.BASE_API}/get_location?ip=${result?.ip}`;
+      const response = await client.get(url);
+      console.log(response)
+      return Promise.resolve(response);
+    } catch (error) {
+      dispatch(snackon(error));
+      return rejectWithValue(error);
+    } finally {
+      dispatch(loadoff(false));
+    }
+  }
+)
+
 const registerSlice = createSlice({
   name: "register",
   initialState: {},
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(GetLocation.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(GetLocation.fulfilled, () => { })
+      .addCase(GetLocation.rejected, (state) => {
+        state.loading = false;
+      })
+
       .addCase(Register.pending, (state) => {
         state.loading = true;
       })

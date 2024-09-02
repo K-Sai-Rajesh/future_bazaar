@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import EnhancedTable from "../common/Table";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { GetProducts } from "../reducers/slices/seller";
+import { DeleteProduct, GetProducts } from "../reducers/slices/seller";
+import { snackon } from "../reducers/slices/snackbar";
 
 export default function Products() {
     const navigate = useNavigate()
@@ -55,6 +56,20 @@ export default function Products() {
                 setRows(Object.values(groupedObjects).map(obj => {
                     return obj[0]
                 }))
+            }
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
+    async function deleteProduct(productId) {
+        try {
+            console.log(productId)
+            const { payload } = await dispatch(DeleteProduct(productId))
+            console.log(payload)
+            if (payload?.message) {
+                dispatch(snackon(payload?.message))
+                getProducts()
             }
         } catch (e) {
             console.error(e)
@@ -127,6 +142,7 @@ export default function Products() {
                     status={"Product"}
                     icon={false}
                     actions={true}
+                    DeleteProduct={deleteProduct}
                 />
             </Grid>
         </Grid>

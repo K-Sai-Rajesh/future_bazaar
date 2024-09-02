@@ -32,7 +32,8 @@ export default function EnhancedTable({
   icon,
   actions,
   rejectSeller,
-  acceptSeller
+  acceptSeller,
+  DeleteProduct
 }) {
   const { role } = JSON.parse(
     decodeURIComponent(getCookieItem(CookiesNames.USER))
@@ -72,6 +73,8 @@ export default function EnhancedTable({
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+
+  console.log(status)
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -271,13 +274,23 @@ export default function EnhancedTable({
                                       <IconButton onClick={() => navigate('/dashboard/edit product', { state: row?.productId })}>
                                         <EditNoteOutlined color="primary" />
                                       </IconButton>
-                                      <IconButton onClick={() => navigate('/dashboard/product', { state: row?.productId })}>
+                                      <IconButton onClick={() => DeleteProduct(row?.productId)}>
                                         <DeleteForeverOutlined color="error" />
                                       </IconButton>
                                     </>
                                     :
-                                    <>
-                                    </>
+                                    status === "Rejected" ?
+                                      <>
+                                        <IconButton onClick={() => acceptSeller(row)}>
+                                          <ApprovalOutlined color="info" />
+                                        </IconButton>
+                                      </>
+                                      :
+                                      <>
+                                        <IconButton onClick={() => acceptSeller(row)}>
+                                          <ApprovalOutlined color="info" />
+                                        </IconButton>
+                                      </>
                             }
                           </TableCell>
                         )

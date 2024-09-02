@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { GetProduct } from "../reducers/slices/seller";
 import Carousel from 'react-material-ui-carousel'
 import ProductCard from "./ProductCard";
+import { WhatsApp } from "@mui/icons-material";
 
 function Item({ path }) {
     console.log(path)
@@ -38,6 +39,10 @@ export default function Product() {
         discount: 0,
         discountedPrice: 0,
         productId: '',
+        shop: "",
+        longitude: 0,
+        latitude: 0,
+        error: 0,
         images: []
     })
 
@@ -54,12 +59,18 @@ export default function Product() {
                 'mrp',
                 'discount',
                 'discountedPrice',
-                'productId'
+                'productId',
+                'shop'
             ]
             let obj = {}
             keys.forEach(key => {
                 obj[key] = payload.result[0][key]
             })
+            console.log(payload)
+            obj['longitude'] = payload.location.longitude
+            obj['latitude'] = payload.location.latitude
+            obj['error'] = payload.location.error
+
             console.log(obj)
             setFiles({
                 ...obj,
@@ -139,7 +150,9 @@ export default function Product() {
                         fontWeight: '600',
                         px: 2
                     }}
-                    onClick={() => navigate('/dashboard/add product')}
+                    href={`https://wa.me/7024899020`}
+                    // onClick={() => navigate('/dashboard/add product')}
+                    startIcon={<WhatsApp />}
                 >
                     Contact
                 </Button>
@@ -169,10 +182,13 @@ export default function Product() {
                     description={file.description}
                     mrp={file.mrp}
                     price={file.discountedPrice}
-                    shop={file.productId.split('_')[file.productId.split('_').length - 1]}
+                    shop={file.shop}
                     category={file.category}
                     subcategory={file.subcategory}
                     stock={file.stock}
+                    longitude={file.longitude}
+                    latitude={file.latitude}
+                    error={file.error}
                 />
             </Grid>
         </Grid >

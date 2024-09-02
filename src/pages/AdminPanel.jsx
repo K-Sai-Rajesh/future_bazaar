@@ -104,6 +104,11 @@ export default function AdminPanel() {
                 columnSpacing={2}
                 justifyContent={'center'}
                 rowGap={2}
+                maxWidth={'lg'}
+                p={1}
+                sx={{
+                    backgroundColor:'#F1F1F1'
+                }}
             >
                 <Grid
                     item

@@ -7,10 +7,11 @@ import Typography from '@mui/material/Typography';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import { Box, Grid } from '@mui/material';
-import { CurrencyRupeeOutlined, FolderCopyOutlined, ShareLocationOutlined } from '@mui/icons-material';
+import { CurrencyRupeeOutlined, FolderCopyOutlined, LocationCityOutlined, ShareLocationOutlined } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
-export default function ProductCard({ title, description, mrp, price, shop, category, subcategory, stock }) {
-
+export default function ProductCard({ title, description, mrp, price, shop, category, subcategory, stock, longitude, latitude, error }) {
+    const navigate = useNavigate()
     return (
         <Card elevation={0}>
             <CardHeader
@@ -65,12 +66,17 @@ export default function ProductCard({ title, description, mrp, price, shop, cate
                 <Grid
                     container
                     columnSpacing={2}
+                    rowGap={2}
                 >
                     <Grid
                         item
                         xs={12}
-                        md={4}
+                        sm={6}
                         lg={2}
+                        display={'flex'}
+                        flexDirection={'column'}
+                        justifyContent={'center'}
+                        alignItems={'center'}
                     >
                         <Box>
                             <Typography
@@ -127,7 +133,7 @@ export default function ProductCard({ title, description, mrp, price, shop, cate
                     <Grid
                         item
                         xs={12}
-                        md={4}
+                        sm={6}
                         lg={3}
                         display={'flex'}
                         flexDirection={'column'}
@@ -172,11 +178,62 @@ export default function ProductCard({ title, description, mrp, price, shop, cate
                     <Grid
                         item
                         xs={12}
-                        md={4}
-                        lg={4}
+                        sm={6}
+                        lg={3}
                         display={'flex'}
                         flexDirection={'column'}
-                        alignItems={'end'}
+                        alignItems={'center'}
+                        sx={{
+                            cursor: 'pointer'
+                        }}
+                        onClick={() => navigate('/location', { state: { location: [latitude, longitude], error } })}
+                    >
+                        <Box>
+                            <Typography
+                                variant="body2"
+                                fontFamily={'Raleway'}
+                                fontWeight={'bold'}
+                                fontSize={15}
+                                sx={{ color: 'text.secondary' }}
+                            >
+                                Location
+                            </Typography>
+                        </Box>
+                        <Box
+                            display={'flex'}
+                            // justifyContent={'center'}
+                            alignItems={'center'}
+                        >
+                            <ShareLocationOutlined
+                                sx={{
+                                    color: '#8921C7',
+                                    fontSize: '20px'
+                                }}
+                            />&ensp;
+                            <Typography
+                                variant="body2"
+                                fontFamily={'Raleway'}
+                                fontWeight={'bold'}
+                                fontSize={12}
+                                sx={{ color: 'text.secondary' }}
+                            >
+                                {
+                                    longitude === null ? longitude : longitude.toFixed(2)
+                                },&ensp;
+                                {
+                                    latitude === null ? latitude : latitude.toFixed(2)
+                                }
+                            </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid
+                        item
+                        xs={12}
+                        sm={6}
+                        lg={3}
+                        display={'flex'}
+                        flexDirection={'column'}
+                        alignItems={'center'}
                     >
                         <Box>
                             <Typography
@@ -194,7 +251,7 @@ export default function ProductCard({ title, description, mrp, price, shop, cate
                             // justifyContent={'center'}
                             alignItems={'center'}
                         >
-                            <ShareLocationOutlined
+                            <LocationCityOutlined
                                 sx={{
                                     color: '#8921C7',
                                     fontSize: '20px'
@@ -221,6 +278,15 @@ export default function ProductCard({ title, description, mrp, price, shop, cate
                     fontFamily={'Raleway'}
                     fontWeight={'bold'}
                     fontSize={12}
+                    sx={{ color: 'text.primary' }}
+                >
+                    Description
+                </Typography>
+                <Typography
+                    variant="body2"
+                    fontFamily={'Raleway'}
+                    fontWeight={'bold'}
+                    fontSize={14}
                     sx={{ color: 'text.secondary' }}
                 >
                     {

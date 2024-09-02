@@ -2,11 +2,13 @@ import express from "express";
 import cors from "cors";
 import { db, jwt } from "./database.cjs";
 import { Login } from "./routes/login.js";
-import { getData, runQuery } from "./routes/common.js";
+import { getData, getLocation, runQuery } from "./routes/common.js";
 import { format } from "date-fns";
 import fileUpload from "express-fileupload";
-import { save } from "./routes/saveFile.js";
+import { save, update } from "./routes/saveFile.js";
 import path from 'path'
+import fs from 'fs'
+import { v4 as uuidv4 } from 'uuid';
 
 const app = new express();
 const secret_key = "future_bazaar";
@@ -36,7 +38,9 @@ const authRoutes = [
     '/api/add_product',
     '/api/categories',
     '/api/categories/:id',
-    '/api/get_products'
+    '/api/get_products',
+    '/api/edit_product',
+    '/api/delete_product/:id'
 ];
 
 app.use(express.json());
@@ -62,14 +66,21 @@ app.get('/api/get_product/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const query = `
+        let query = `
                     select * from products
                     where 
                         productId="${id}";
                 `
         const result = await getData(query, db);
+        // console.log(result[0].owner)`
+        query = `
+                select longitude, latitude, error from Register where id=${result[0].owner};
+            `
+        const location = await getData(query, db)
+        // console.log(location[0])
         res.status(200).send({
             result,
+            location: location[0],
             message: "Product Fetched Successfully !"
         })
     } catch (e) {
@@ -81,19 +92,33 @@ app.get('/api/get_product/:id', async (req, res) => {
 app.post("/api/login", async (req, res) => {
     const { email, password } = req.body;
     try {
-        console.log(email, password)
+        // console.log(email, password)
         const result = await Login({ email, password, db });
-        console.log(result)
+        // console.log(result)
         if (result?.length === 1) {
-            const token = jwt.sign(result[0], secret_key);
-            const query = `insert into tokens (token) values ("${token}");`
-            await runQuery(query, db)
-            res.status(200).send({
-                message: "Login Successful !",
-                accessToken: token,
-                refreshToken: token,
-                data: result[0],
-            });
+            if (result[0].status === "Approved") {
+                const token = jwt.sign(result[0], secret_key);
+                const query = `insert into tokens (token) values ("${token}");`
+                await runQuery(query, db)
+                res.status(200).send({
+                    message: "Login Successful !",
+                    accessToken: token,
+                    refreshToken: token,
+                    data: result[0],
+                });
+            } else if (result[0].status === "Pending") {
+                res.status(200).send({
+                    message: "Profile verification is pending !"
+                });
+            } else if (result[0].status === "Rejected") {
+                res.status(200).send({
+                    message: "Profile has been Rejected !"
+                });
+            } else {
+                res.status(200).send({
+                    message: "User Doesnot exist's !"
+                });
+            }
         } else res.status(404).send("User Does not Exist with this credentials !");
     } catch (e) {
         res.status(500).send(`Login Failed ! due to ${e.message}`);
@@ -128,7 +153,10 @@ app.post("/api/register", async (req, res) => {
                             role, 
                             registered, 
                             appliedDate, 
-                            status
+                            status,
+                            error,
+                            latitude,
+                            longitude
                         )
                         values
                         (
@@ -146,7 +174,10 @@ app.post("/api/register", async (req, res) => {
                             "seller", 
                             "false", 
                             "${format(new Date(), "yyyy-MM-dd")}",
-                            "Pending"
+                            "Pending",
+                            "${register.error}",
+                            "${register.latitude}",
+                            "${register.longitude}"
                         );
                     `;
             await runQuery(query, db);
@@ -230,15 +261,98 @@ app.post('/api/add_product', async (req, res) => {
         const { user } = req
         const { title, description, stock, mrp, discount, discountedPrice, category, subcategory } = req.body
         const files = req.files['files[]']
-        // console.log(req.files['file[]'])
+        const productId = uuidv4();
         if (user.role === 'seller' || user.role === 'admin') {
             const arr = await Promise.all(files.map(async (file, idx) => {
-                const contents = await save(file, idx, path, title, description, stock, mrp, discount, discountedPrice, user.id, category, subcategory, db, user.shopName);
+                const contents = await save(file, idx, path, title, description, stock, mrp,
+                    discount, discountedPrice, user.id, category, subcategory, db,
+                    user.shopName, productId
+                );
                 return contents
             }));
             res.status(200).send({
                 arr,
                 message: "Product Added Successfully !"
+            })
+        } else {
+            res.status(404).send({
+                message: "Not permitted for Operation !"
+            })
+        }
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
+
+app.post('/api/edit_product', async (req, res) => {
+    try {
+        const { user } = req
+        const { title, description, stock, mrp, discount, discountedPrice, category, subcategory, productId } = req.body
+        const files = req.files === null ? null : req.files['files[]'] ? req.files['files[]'] : null
+
+        const paths = req.body['paths[]'] ? req.body['paths[]'] : null
+        const ids = req.body['id[]']
+        console.log(user.id, productId)
+        if (user.role === 'seller' || user.role === 'admin') {
+            if (files !== null)
+                fs.rmSync(
+                    `./assets/${path.join(`${user.id}`, `${productId}`)}`,
+                    { recursive: true, force: true }
+                );
+            const arr = await Promise.all(ids.map(async (id, idx) => {
+                const contents = await update(id, paths === null ? null : paths[idx], files === null ? null : files[idx], idx, path, title, description, stock, mrp, discount, discountedPrice, user.id, category, subcategory, db, user.shopName, productId);
+                return contents
+            }));
+            if (files !== null) {
+                if (files.length > paths.length) {
+                    files[files?.length - 1].mv(path.join(process.cwd(), 'assets', `${user.id}`, `${productId}`, files[files?.length - 1].name), async (err) => {
+                        if (err) {
+                            console.log(err)
+                            // reject(`${title} was not saved !`);
+                        }
+                        else {
+
+                            let query = `
+                                insert into products (
+                                    title,
+                                    description,
+                                    stock,
+                                    mrp,
+                                    discount,
+                                    discountedPrice,
+                                    category,
+                                    subcategory,
+                                    owner,
+                                    path,
+                                    size,
+                                    productId
+                                ) 
+                                    values
+                                (
+                                    "${title}",
+                                    "${description}",    
+                                    "${stock}",
+                                    "${mrp}",    
+                                    "${discount}",
+                                    "${discountedPrice}",
+                                    "${category}",    
+                                    "${subcategory}",    
+                                    "${user.id}",
+                                    "${path.join('public', `${user.id}`, `${productId}`, `${files[files?.length - 1].name}`)}",
+                                    ${files[files?.length - 1].size},
+                                    "${productId}"   
+                                );
+                            `
+                            await runQuery(query, db)
+                            arr.push(path.join('public', `${user.id}`, `${productId}`, `${files[files?.length - 1].name}`))
+                        }
+                    })
+                }
+            }
+            res.status(200).send({
+                arr,
+                message: "Product Updated Successfully !"
             })
         } else {
             res.status(404).send({
@@ -302,7 +416,6 @@ app.get('/api/categories/:category', async (req, res) => {
         if (user.role === 'seller' || user.role === 'admin') {
             const query = `select * from subcategory where category="${category}";`;
             const result = await getData(query, db)
-            console.log(result)
             res.status(200).send(result)
         } else {
             res.status(404).send({
@@ -314,5 +427,50 @@ app.get('/api/categories/:category', async (req, res) => {
         res.status(500).send(`Server Error ! due to ${e.message}`);
     }
 });
+
+app.get('/api/get_location', async (req, res) => {
+    try {
+        const { ip } = req.query
+        console.log(ip)
+        const location = await getLocation(ip);
+        res.status(200).send({
+            message: "IP Address Fetched Successfully !",
+            location
+        })
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
+
+app.delete('/api/delete_product/:id', async (req, res) => {
+    try {
+        const { user } = req
+        const { id } = req.params
+        if (user.role === 'seller' || user.role === 'admin') {
+            const __dirname = path.join('./', 'assets', `${user.id}`, `${id}`)
+            console.log(__dirname)
+            fs.rmSync(
+                `./${__dirname}`,
+                { recursive: true, force: true }
+            );
+            const query = `delete from products where productId="${id}";`;
+            const result = await runQuery(query, db)
+            console.log(result)
+            res.status(200).send({
+                message: "Product Delete Successfully !"
+            })
+        } else {
+            res.status(404).send({
+                message: "Not permitted for Operation !"
+            })
+        }
+    } catch (e) {
+        console.error(e)
+        res.status(500).send({
+            message: "Server Error !"
+        })
+    }
+})
 
 //---- 

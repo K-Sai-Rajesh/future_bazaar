@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { snackon } from "../reducers/slices/snackbar";
 import { useDispatch } from "react-redux";
 import { CurrencyRupeeOutlined, DescriptionOutlined, DiscountOutlined, InventoryOutlined, TitleOutlined } from "@mui/icons-material";
-import { AddProduct, Category, GetProduct, SubCategory } from "../reducers/slices/seller";
+import { AddProduct, Category, EditProduct, GetProduct, SubCategory } from "../reducers/slices/seller";
 import CustomSelectField from "../common/CustomSelectField";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -16,7 +16,7 @@ export default function AddNewProduct() {
     const [file, setFiles] = useState(null)
     const [files, setFile] = useState(null)
     const navigate = useNavigate()
-    const { state, pathname } = useLocation()
+    const { state } = useLocation()
     const [categories, setCategories] = useState({
         catgeories: [],
         sub: []
@@ -38,11 +38,20 @@ export default function AddNewProduct() {
 
     async function handleSubmit() {
         try {
-            if (files === null || files?.length < 2) {
+
+            if (state === null && (files === null || files?.length < 2)) {
                 dispatch(snackon("Please Upload minimum of 2 Product Images !"))
                 return
             }
-            const { payload } = await dispatch(AddProduct({ ...register.values, files }))
+
+            console.log(register.values, state)
+
+            const { payload } = await dispatch(
+                state === null ?
+                    AddProduct({ ...register.values, files })
+                    :
+                    EditProduct({ ...register.values, files })
+            )
             if (payload?.message) {
                 dispatch(snackon(payload?.message))
                 navigate(-1)
@@ -64,7 +73,10 @@ export default function AddNewProduct() {
             stock: null,
             mrp: null,
             discount: null,
-            discountedPrice: null
+            discountedPrice: null,
+            ids: [],
+            productId: '',
+            paths: []
         },
         enableReinitialize: true,
         onSubmit: handleSubmit,
@@ -119,10 +131,17 @@ export default function AddNewProduct() {
     async function getProductData(id) {
         try {
             const { payload } = await dispatch(GetProduct(id))
+            console.log(payload.result)
             const paths = payload.result.map(item => `http://localhost:8080/${item.path}`)
+            const ids = payload.result.map(ids => ids.id)
             const keys = [
-                'title', 'description', 'category', 'subcategory', 'stock', 'mrp', 'discount', 'discountedPrice'
+                'title', 'description', 'category', 'subcategory',
+                'stock', 'mrp', 'discount', 'discountedPrice', 'productId'
             ]
+            register.setFieldValue('id', ids)
+            register.setFieldValue('paths', paths)
+            // register.setFieldValue('productId', paths)
+
             keys.forEach(key => {
                 register.setFieldValue(key, payload.result[0][key])
             })
@@ -132,7 +151,6 @@ export default function AddNewProduct() {
             console.error(e)
         }
     }
-
     useEffect(() => {
         getCategories()
         if (state !== null) {

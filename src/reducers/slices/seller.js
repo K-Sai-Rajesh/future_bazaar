@@ -20,6 +20,23 @@ export const AddProduct = createAsyncThunk(
     }
 );
 
+export const EditProduct = createAsyncThunk(
+    "EditProduct",
+    async (param, { rejectWithValue, dispatch }) => {
+        try {
+            dispatch(loadon(true));
+            const headers = { "Content-Type": "multipart/form-data" }
+            const url = `${config.BASE_API}/edit_product`;
+            const response = await client.post(url, param, headers);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error);
+        } finally {
+            dispatch(loadoff(false));
+        }
+    }
+);
+
 export const GetProducts = createAsyncThunk(
     "GetProducts",
     async (param, { rejectWithValue, dispatch }) => {
@@ -43,6 +60,23 @@ export const GetProduct = createAsyncThunk(
             dispatch(loadon(true));
             const url = `${config.BASE_API}/get_product/${param}`;
             const response = await client.get(url);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error);
+        } finally {
+            dispatch(loadoff(false));
+        }
+    }
+);
+
+export const DeleteProduct = createAsyncThunk(
+    "DeleteProduct",
+    async (param, { rejectWithValue, dispatch }) => {
+        try {
+            dispatch(loadon(true));
+            const url = `${config.BASE_API}/delete_product/${param}`;
+            const response = await client.delete(url);
+            console.log(response)
             return response;
         } catch (error) {
             return rejectWithValue(error);
@@ -91,6 +125,14 @@ const sellerSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(DeleteProduct.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(DeleteProduct.fulfilled, () => { })
+            .addCase(DeleteProduct.rejected, (state) => {
+                state.loading = false;
+            })
+
             .addCase(GetProduct.pending, (state) => {
                 state.loading = true;
             })

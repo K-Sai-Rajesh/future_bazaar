@@ -1,3 +1,5 @@
+import { geolocationParams, ipgeolocationApi } from "../database.cjs";
+
 export function getData(query, db) {
     return new Promise((resolve, reject) => {
         db.all(query, (err, row) => {
@@ -17,9 +19,27 @@ export function runQuery(query, db) {
             if (err) {
                 console.error(err);
                 reject(err);
-            } else {    
+            } else {
                 resolve(row ? row : null);
             }
         });
+    });
+}
+
+export function getLocation(ip) {
+    return new Promise((resolve, reject) => {
+        try {
+            // geolocationParams.setLang('en');
+            // geolocationParams.setIPAddresses([`${ip}`]);
+            // geolocationParams.setFields('geo');
+            // ipgeolocationApi.getGeolocation(geolocationParams, (geoResponse) => {
+            //     console.log(geoResponse)
+            // });
+            ipgeolocationApi.getGeolocation((json) => {
+                resolve(json);
+            });
+        } catch (e) {
+            console.error(e)
+        }
     });
 }

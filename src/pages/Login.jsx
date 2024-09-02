@@ -29,7 +29,8 @@ export default function Login() {
         if (payload?.message === "Login Successful !") {
             dispatch(snackon(payload?.message));
             navigate('/dashboard')
-        }
+        } else
+            dispatch(snackon(payload?.message));
     };
     const register = useFormik({
         initialValues: {

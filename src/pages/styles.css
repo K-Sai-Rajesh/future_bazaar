@@ -1,0 +1,15 @@
+#vesslePath {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    animation: dash 3s linear forwards infinite;
+  }
+  
+  @keyframes dash {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  
