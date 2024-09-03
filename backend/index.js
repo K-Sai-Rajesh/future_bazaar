@@ -40,7 +40,8 @@ const authRoutes = [
     '/api/categories/:id',
     '/api/get_products',
     '/api/edit_product',
-    '/api/delete_product/:id'
+    '/api/delete_product/:id',
+    "/api/storage"
 ];
 
 app.use(express.json());
@@ -471,6 +472,30 @@ app.delete('/api/delete_product/:id', async (req, res) => {
             message: "Server Error !"
         })
     }
-})
+});
+
+app.get('/api/get_seller/:id', async (req, res) => {
+    try {
+        const { id } = req.params
+        console.log(id)
+        // const location = await getLocation(ip);
+        const query = `
+            select 
+                firstname, lastname, status, shopStartTime, shopEndTime, shopName, gst, latitude, longitude, error, shopPhoneNumber
+            from 
+                Register
+            where 
+                id=${id};
+        `
+        const result = await getData(query, db)
+        res.status(200).send({
+            result,
+            message: "Seller Fetched Successfully !",
+        })
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
 
 //---- 

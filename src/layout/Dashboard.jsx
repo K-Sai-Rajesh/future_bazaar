@@ -2,6 +2,7 @@ import * as React from "react";
 import { Outlet } from "react-router-dom";
 import { Grid } from "@mui/material";
 import DashboardNav from "./DashboardNav";
+import Copyright from "../pages/CopyRight";
 
 function Dashboard() {
   return (
@@ -11,10 +12,12 @@ function Dashboard() {
         container
         mt={"90px"}
         px={2}
+        pb={3}
         justifyContent={'center'}
       >
         <Outlet />
       </Grid>
+      <Copyright />
     </>
   );
 }

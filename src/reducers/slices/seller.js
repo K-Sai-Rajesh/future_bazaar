@@ -119,12 +119,36 @@ export const SubCategory = createAsyncThunk(
     }
 );
 
+export const GetSeller = createAsyncThunk(
+    "GetSeller",
+    async (param, { rejectWithValue, dispatch }) => {
+        try {
+            dispatch(loadon(true));
+            const url = `${config.BASE_API}/get_seller/${param}`;
+            const response = await client.get(url);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error);
+        } finally {
+            dispatch(loadoff(false));
+        }
+    }
+);
+
 const sellerSlice = createSlice({
     name: "seller",
     initialState: {},
     reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(GetSeller.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(GetSeller.fulfilled, () => { })
+            .addCase(GetSeller.rejected, (state) => {
+                state.loading = false;
+            })
+
             .addCase(DeleteProduct.pending, (state) => {
                 state.loading = true;
             })

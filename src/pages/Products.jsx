@@ -1,4 +1,4 @@
-import { Button, Grid, Paper, Typography } from "@mui/material";
+import { Button, Grid, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import EnhancedTable from "../common/Table";
 import { useEffect, useState } from "react";
@@ -98,20 +98,6 @@ export default function Products() {
             <Grid
                 item
                 xs={12}
-                sm={6}
-            >
-                <Typography
-                    fontFamily={'Raleway'}
-                    fontSize={15}
-                    fontWeight={'bold'}
-                >
-                    Products
-                </Typography>
-            </Grid>
-            <Grid
-                item
-                xs={12}
-                sm={6}
                 display={'flex'}
                 alignItems={'center'}
                 justifyContent={'end'}
@@ -119,6 +105,7 @@ export default function Products() {
                 <Button
                     variant="contained"
                     size="small"
+                    disableElevation
                     sx={{
                         textTransform: 'none',
                         borderRadius: 15,

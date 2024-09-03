@@ -1,4 +1,4 @@
-import { Button, Grid, Paper, Typography } from "@mui/material";
+import { Button, Grid, Paper } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -105,20 +105,6 @@ export default function Product() {
             <Grid
                 item
                 xs={12}
-                sm={6}
-            >
-                <Typography
-                    fontFamily={'Raleway'}
-                    fontSize={15}
-                    fontWeight={'bold'}
-                >
-                    Product Details
-                </Typography>
-            </Grid>
-            <Grid
-                item
-                xs={12}
-                sm={6}
                 display={'flex'}
                 alignItems={'center'}
                 justifyContent={'end'}
@@ -126,6 +112,7 @@ export default function Product() {
                 <Button
                     variant="outlined"
                     size="small"
+                    disableElevation
                     color="error"
                     sx={{
                         textTransform: 'none',
@@ -141,6 +128,7 @@ export default function Product() {
                 </Button>&ensp;
                 <Button
                     variant="contained"
+                    disableElevation
                     size="small"
                     sx={{
                         textTransform: 'none',

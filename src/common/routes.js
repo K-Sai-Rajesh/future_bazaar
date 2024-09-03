@@ -14,6 +14,7 @@ import Product from "../pages/Product";
 import MapLocation from "../pages/Map";
 import PeerLocation from "../pages/PeerLocation";
 import Shop from "../pages/Shop";
+import Seller from "../pages/Seller";
 // import RegisterPage from "../pages/Register"`;
 // import NotFound from "../pages/404";
 
@@ -27,6 +28,10 @@ export const routes = [
         element: <LandingPage />,
       }
     ],
+  },
+  {
+    path: "seller/:id",
+    element: <Seller />,
   },
   {
     path: "login",

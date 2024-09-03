@@ -174,7 +174,7 @@ export default function AddNewProduct() {
                     backgroundColor: '#F1F1F1'
                 }}
             >
-                <Grid
+                {/* <Grid
                     item
                     xs={12}
                     sm={6}
@@ -188,11 +188,10 @@ export default function AddNewProduct() {
                             state === null ? "Add Product" : "Edit Product"
                         }
                     </Typography>
-                </Grid>
+                </Grid> */}
                 <Grid
                     item
                     xs={12}
-                    sm={6}
                     display={'flex'}
                     alignItems={'center'}
                     justifyContent={'end'}
@@ -216,6 +215,7 @@ export default function AddNewProduct() {
                     <Button
                         variant="contained"
                         size="small"
+                        disableElevation
                         sx={{
                             textTransform: 'none',
                             borderRadius: 15,
@@ -226,7 +226,10 @@ export default function AddNewProduct() {
                         }}
                         onClick={() => register.handleSubmit()}
                     >
-                        Upload
+
+                        {
+                            state === null ? "Add" : "Update"
+                        }
                     </Button>
                 </Grid>
                 <Grid
