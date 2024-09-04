@@ -32,7 +32,7 @@ export default function MapLocation() {
             display={'flex'}
             flexDirection={'column'}
             alignItems={'center'}
-            height={'100vh'}
+            height={'80vh'}
         >
             <Button
                 variant="outlined"
@@ -76,7 +76,7 @@ export default function MapLocation() {
                 continue
             </Button>
             <Map
-                height={"88vh"}
+                height={"80vh"}
                 width={window.innerWidth - 40}
                 defaultCenter={[location.latitude, location.longitude]}
                 defaultZoom={15}

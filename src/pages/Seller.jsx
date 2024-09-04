@@ -4,6 +4,7 @@ import Copyright from "./CopyRight";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { GetSeller } from "../reducers/slices/seller";
+import sellerbg from '../assets/images/sellerbg.jpg';
 
 export default function Seller() {
     const { id } = useParams()
@@ -23,10 +24,11 @@ export default function Seller() {
 
     useEffect(() => {
         try {
-            getSeller()
+            getSeller(); 
         } catch (e) {
             console.error(e)
         }
+        // eslint-disable-next-line
     }, [])
 
     return (
@@ -47,6 +49,13 @@ export default function Seller() {
             >
                 <Grid
                     xs={12}
+                    sx={{
+                        backgroundImage: `url(${sellerbg})`,
+                        backgroundRepeat: "no-repeat",
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        height: 200
+                    }}
                 >
                     <Typography>
                         Seller
@@ -54,6 +63,6 @@ export default function Seller() {
                 </Grid>
             </Grid>
             <Copyright />
-        </Grid>
+        </Grid >
     )
 }

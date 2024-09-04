@@ -41,7 +41,8 @@ const authRoutes = [
     '/api/get_products',
     '/api/edit_product',
     '/api/delete_product/:id',
-    "/api/storage"
+    "/api/storage",
+    '/api/get_seller_attributes'
 ];
 
 app.use(express.json());
@@ -66,19 +67,19 @@ app.listen(8080, async () => {
 app.get('/api/get_product/:id', async (req, res) => {
     try {
         const { id } = req.params;
-
         let query = `
                     select * from products
                     where 
                         productId="${id}";
                 `
         const result = await getData(query, db);
-        // console.log(result[0].owner)`
-        query = `
-                select longitude, latitude, error from Register where id=${result[0].owner};
-            `
+
+        query = `select longitude, latitude, error from Register where id=${result[0].owner};`
         const location = await getData(query, db)
-        // console.log(location[0])
+
+        query = `insert into views (viewed, owner, type) values ("${id}","${result[0].owner}","product"); `
+        await runQuery(query, db);
+
         res.status(200).send({
             result,
             location: location[0],
@@ -479,7 +480,7 @@ app.get('/api/get_seller/:id', async (req, res) => {
         const { id } = req.params
         console.log(id)
         // const location = await getLocation(ip);
-        const query = `
+        let query = `
             select 
                 firstname, lastname, status, shopStartTime, shopEndTime, shopName, gst, latitude, longitude, error, shopPhoneNumber
             from 
@@ -488,6 +489,29 @@ app.get('/api/get_seller/:id', async (req, res) => {
                 id=${id};
         `
         const result = await getData(query, db)
+
+        query = `insert into views (viewed, owner, type) values ("${id}","${id}","profile"); `
+        await runQuery(query, db);
+
+        res.status(200).send({
+            result,
+            message: "Seller Fetched Successfully !",
+        })
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
+
+app.get('/api/get_seller_attributes', async (req, res) => {
+    try {
+        const { user } = req
+        let query = `select * from views where owner="${user?.id}"`
+        let result = await getData(query, db)
+        result = {
+            profile: result?.filter(item => item?.type === "profile").length,
+            product: result?.filter(item => item?.type === "product").length
+        }
         res.status(200).send({
             result,
             message: "Seller Fetched Successfully !",

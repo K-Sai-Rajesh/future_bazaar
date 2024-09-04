@@ -243,10 +243,6 @@ export default function EnhancedTable({
                         {actions && (
                           <TableCell
                             align={"center"}
-                            sx={{
-                              visibility: `${role === "Student" ? "hidden" : "visible"
-                                }`,
-                            }}
                           >
                             {
                               status === "Approved" ?
@@ -268,7 +264,7 @@ export default function EnhancedTable({
                                   :
                                   status === "Product" ?
                                     <>
-                                      <IconButton onClick={() => navigate('/dashboard/product', { state: row?.productId })}>
+                                      <IconButton onClick={() => navigate(`/product/${row?.productId}`)}>
                                         <VisibilityOutlined color="info" />
                                       </IconButton>
                                       <IconButton onClick={() => navigate('/dashboard/edit product', { state: row?.productId })}>

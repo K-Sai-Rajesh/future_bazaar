@@ -53,6 +53,22 @@ export const GetProducts = createAsyncThunk(
     }
 );
 
+export const GetSellersAttributes = createAsyncThunk(
+    "GetSellersAttributes",
+    async (param, { rejectWithValue, dispatch }) => {
+        try {
+            dispatch(loadon(true));
+            const url = `${config.BASE_API}/get_seller_attributes`;
+            const response = await client.get(url);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error);
+        } finally {
+            dispatch(loadoff(false));
+        }
+    }
+);
+
 export const GetProduct = createAsyncThunk(
     "GetProduct",
     async (param, { rejectWithValue, dispatch }) => {
@@ -141,6 +157,14 @@ const sellerSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(GetSellersAttributes.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(GetSellersAttributes.fulfilled, () => { })
+            .addCase(GetSellersAttributes.rejected, (state) => {
+                state.loading = false;
+            })
+
             .addCase(GetSeller.pending, (state) => {
                 state.loading = true;
             })

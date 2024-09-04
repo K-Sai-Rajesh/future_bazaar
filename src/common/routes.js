@@ -26,12 +26,24 @@ export const routes = [
       {
         path: "",
         element: <LandingPage />,
-      }
+      },
+      {
+        path: "product/:id",
+        element: <Product />
+      },
+      {
+        path: "seller/:id",
+        element: <Seller />,
+      },
+      {
+        path: 'location',
+        element: <PeerLocation />
+      },
+      {
+        path: 'map',
+        element: <MapLocation />
+      },
     ],
-  },
-  {
-    path: "seller/:id",
-    element: <Seller />,
   },
   {
     path: "login",
@@ -40,14 +52,6 @@ export const routes = [
   {
     path: "register",
     element: <SignUp />,
-  },
-  {
-    path: 'location',
-    element: <PeerLocation />
-  },
-  {
-    path: 'map',
-    element: <MapLocation />
   },
   {
     path: "/dashboard",
@@ -72,10 +76,6 @@ export const routes = [
       {
         path: "products",
         element: <Products />
-      },
-      {
-        path: "product",
-        element: <Product />
       },
       {
         path: "shop",

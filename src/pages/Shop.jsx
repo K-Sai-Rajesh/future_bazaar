@@ -1,7 +1,7 @@
 import { Grid, Paper, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import { GetProducts } from "../reducers/slices/seller";
+import { GetProducts, GetSellersAttributes } from "../reducers/slices/seller";
 import EnhancedTable from "../common/Table";
 import { Gauge, GaugeContainer, GaugeReferenceArc, GaugeValueArc, useGaugeState } from "@mui/x-charts";
 import QRCode from "react-qr-code";
@@ -10,6 +10,10 @@ export default function Shop() {
     const dispatch = useDispatch()
     const [storage, setStorage] = useState(0)
     const [products, setProducts] = useState([])
+    const [views, setViews] = useState({
+        profile: 0,
+        product: 0
+    })
     const headCell = [
         {
             id: 'path',
@@ -86,8 +90,21 @@ export default function Shop() {
         }
     }
 
+    // eslint-disable-next-line
+    async function getSellersAttributes() {
+        try {
+            const { payload } = await dispatch(GetSellersAttributes())
+            if (payload?.result) {
+                setViews(payload?.result)
+            }
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
     useEffect(() => {
         getStorage() // eslint-disable-next-line
+        getSellersAttributes() // eslint-disable-next-line
     }, [])
 
     return (
@@ -119,6 +136,7 @@ export default function Shop() {
                     style={{ height: "auto", maxWidth: 150, width: 150 }}
                     value={"https:mui.com"}
                     viewBox={`0 0 100 100`}
+                    level="Q"
                 />
             </Grid>
             <Grid
@@ -146,13 +164,21 @@ export default function Shop() {
                     height={150}
                     startAngle={-110}
                     endAngle={110}
-                    value={storage}
+                    value={products.length}
                     valueMax={20}
                 >
                     <GaugeReferenceArc />
                     <GaugeValueArc />
                     <GaugePointer />
                 </GaugeContainer>
+                <Typography
+                    fontFamily={'Raleway'}
+                    fontSize={20}
+                    fontWeight={'bold'}
+                    color={'#8921C7'}
+                >
+                    {products.length}/20
+                </Typography>
             </Grid>
             <Grid
                 item
@@ -172,7 +198,7 @@ export default function Shop() {
                     fontSize={20}
                     fontWeight={'bold'}
                 >
-                    Storage
+                    Storage (MB)
                 </Typography>
                 <Gauge
                     width={150}
@@ -180,6 +206,74 @@ export default function Shop() {
                     value={parseFloat(storage.toFixed(2))}
                     valueMax={200}
                 />
+                <Typography
+                    fontFamily={'Raleway'}
+                    fontSize={20}
+                    fontWeight={'bold'}
+                    color={'#8921C7'}
+                >
+                    200
+                </Typography>
+            </Grid>
+            <Grid
+                item
+                xs={12}
+                sm={5.9}
+                p={2}
+                elevation={0}
+                component={Paper}
+                display={'flex'}
+                flexDirection={'column'}
+                justifyContent={'center'}
+                alignItems={'center'}
+            >
+                <Typography
+                    fontFamily={'Raleway'}
+                    fontSize={20}
+                    fontWeight={'bold'}
+                >
+                    Product Views
+                </Typography>
+                <Typography
+                    fontFamily={'Raleway'}
+                    fontSize={30}
+                    fontWeight={'bold'}
+                    color={'#1976D2'}
+                >
+                    {
+                        views.product
+                    }
+                </Typography>
+            </Grid>
+            <Grid
+                item
+                xs={12}
+                sm={5.9}
+                p={2}
+                elevation={0}
+                component={Paper}
+                display={'flex'}
+                flexDirection={'column'}
+                justifyContent={'center'}
+                alignItems={'center'}
+            >
+                <Typography
+                    fontFamily={'Raleway'}
+                    fontSize={20}
+                    fontWeight={'bold'}
+                >
+                    Profile Views
+                </Typography>
+                <Typography
+                    fontFamily={'Raleway'}
+                    fontSize={30}
+                    color={'#1976D2'}
+                    fontWeight={'bold'}
+                >
+                    {
+                        views.profile
+                    }
+                </Typography>
             </Grid>
             <Grid
                 item

@@ -10,7 +10,7 @@ function Layout() {
             <NAVBAR />
             <Grid
                 container
-                mt={'100px'}
+                mt={'90px'}
 
                 // border={'1px solid red'}
                 px={2}

@@ -9,6 +9,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import { Box, Grid } from '@mui/material';
 import { CurrencyRupeeOutlined, FolderCopyOutlined, LocationCityOutlined, ShareLocationOutlined } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import QRCode from 'react-qr-code';
 
 export default function ProductCard({ title, description, mrp, price, shop, category, subcategory, stock, longitude, latitude, error }) {
     const navigate = useNavigate()
@@ -293,6 +294,20 @@ export default function ProductCard({ title, description, mrp, price, shop, cate
                         description
                     }
                 </Typography>
+            </CardContent>
+            <CardContent
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center'
+                }}
+            >
+                <QRCode
+                    size={100}
+                    style={{ height: "auto", maxWidth: 80, width: 80 }}
+                    value={"https:mui.com"}
+                    viewBox={`0 0 100 100`}
+                    level="L"
+                />
             </CardContent>
         </Card>
     );

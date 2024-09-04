@@ -7,10 +7,7 @@ import Copyright from "./CopyRight";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function PeerLocation() {
-    // eslint-disable-next-line
     const { state } = useLocation()
-    // eslint-disable-next-line
-    // const [location, setLocation] = useState()
     const navigate = useNavigate()
 
     return (
@@ -18,7 +15,7 @@ export default function PeerLocation() {
             display={'flex'}
             flexDirection={'column'}
             alignItems={'center'}
-            height={'100vh'}
+            height={'80vh'}
         >
             <Button
                 variant="outlined"

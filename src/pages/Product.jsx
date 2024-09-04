@@ -1,11 +1,12 @@
 import { Button, Grid, Paper } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { GetProduct } from "../reducers/slices/seller";
 import Carousel from 'react-material-ui-carousel'
 import ProductCard from "./ProductCard";
 import { WhatsApp } from "@mui/icons-material";
+import Copyright from "./CopyRight";
 
 function Item({ path }) {
     console.log(path)
@@ -26,7 +27,7 @@ function Item({ path }) {
 }
 
 export default function Product() {
-    const { state } = useLocation()
+    const { id } = useParams();
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [file, setFiles] = useState({
@@ -82,8 +83,8 @@ export default function Product() {
     }
 
     useEffect(() => {
-        if (state !== null) {
-            getProductData(state)
+        if (id !== null) {
+            getProductData(id)
         }
         // eslint-disable-next-line
     }, [])
@@ -91,94 +92,101 @@ export default function Product() {
     return (
         <Grid
             container
-            maxWidth={'lg'}
-            component={Paper}
-            elevation={0}
-            p={3}
-            flexGrow={1}
-            rowGap={2}
-            justifyContent={'space-between'}
-            sx={{
-                backgroundColor: '#F1F1F1'
-            }}
+            p={2}
+            justifyContent={'center'}
         >
             <Grid
-                item
-                xs={12}
-                display={'flex'}
-                alignItems={'center'}
-                justifyContent={'end'}
-            >
-                <Button
-                    variant="outlined"
-                    size="small"
-                    disableElevation
-                    color="error"
-                    sx={{
-                        textTransform: 'none',
-                        borderRadius: 15,
-                        fontSize: '13px',
-                        fontFamily: 'Raleway',
-                        fontWeight: '600',
-                        px: 2
-                    }}
-                    onClick={() => navigate(-1)}
-                >
-                    Back
-                </Button>&ensp;
-                <Button
-                    variant="contained"
-                    disableElevation
-                    size="small"
-                    sx={{
-                        textTransform: 'none',
-                        borderRadius: 15,
-                        fontSize: '13px',
-                        fontFamily: 'Raleway',
-                        fontWeight: '600',
-                        px: 2
-                    }}
-                    href={`https://wa.me/7024899020`}
-                    // onClick={() => navigate('/dashboard/add product')}
-                    startIcon={<WhatsApp />}
-                >
-                    Contact
-                </Button>
-            </Grid>
-            <Grid
-                item
+                container
+                maxWidth={'lg'}
                 component={Paper}
                 elevation={0}
-                xs={12}
-                lg={5}
+                p={3}
+                flexGrow={1}
+                rowGap={2}
+                justifyContent={'space-between'}
+                sx={{
+                    backgroundColor: '#F1F1F1',
+                    height: '70vh'
+                }}
             >
-                <Carousel>
-                    {
-                        file.images.map((item, i) => <Item key={i} path={item} />)
-                    }
-                </Carousel>
-            </Grid>
-            <Grid
-                item
-                xs={12}
-                lg={7}
-                component={Paper}
-                elevation={0}
-            >
-                <ProductCard
-                    title={file.title}
-                    description={file.description}
-                    mrp={file.mrp}
-                    price={file.discountedPrice}
-                    shop={file.shop}
-                    category={file.category}
-                    subcategory={file.subcategory}
-                    stock={file.stock}
-                    longitude={file.longitude}
-                    latitude={file.latitude}
-                    error={file.error}
-                />
-            </Grid>
-        </Grid >
+                <Grid
+                    item
+                    xs={12}
+                    display={'flex'}
+                    alignItems={'center'}
+                    justifyContent={'end'}
+                >
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        disableElevation
+                        color="error"
+                        sx={{
+                            textTransform: 'none',
+                            borderRadius: 15,
+                            fontSize: '13px',
+                            fontFamily: 'Raleway',
+                            fontWeight: '600',
+                            px: 2
+                        }}
+                        onClick={() => navigate(-1)}
+                    >
+                        Back
+                    </Button>&ensp;
+                    <Button
+                        variant="contained"
+                        disableElevation
+                        size="small"
+                        sx={{
+                            textTransform: 'none',
+                            borderRadius: 15,
+                            fontSize: '13px',
+                            fontFamily: 'Raleway',
+                            fontWeight: '600',
+                            px: 2
+                        }}
+                        href={`https://wa.me/7024899020`}
+                        startIcon={<WhatsApp />}
+                    >
+                        Contact
+                    </Button>
+                </Grid>
+                <Grid
+                    item
+                    component={Paper}
+                    elevation={0}
+                    xs={12}
+                    lg={5}
+                >
+                    <Carousel>
+                        {
+                            file.images.map((item, i) => <Item key={i} path={item} />)
+                        }
+                    </Carousel>
+                </Grid>
+                <Grid
+                    item
+                    xs={12}
+                    lg={7}
+                    component={Paper}
+                    elevation={0}
+                >
+                    <ProductCard
+                        title={file.title}
+                        description={file.description}
+                        mrp={file.mrp}
+                        price={file.discountedPrice}
+                        shop={file.shop}
+                        category={file.category}
+                        subcategory={file.subcategory}
+                        stock={file.stock}
+                        longitude={file.longitude}
+                        latitude={file.latitude}
+                        error={file.error}
+                    />
+                </Grid>
+            </Grid >
+            <Copyright />
+        </Grid>
     )
 }

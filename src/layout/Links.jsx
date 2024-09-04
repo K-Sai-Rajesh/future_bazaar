@@ -1,11 +1,13 @@
 import { Breadcrumbs, Button, Typography } from '@mui/material'
 import * as React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { CookiesNames, getCookieItem } from '../helpers/cookies';
 
 const links = ["", "categories"]
 
 function Links() {
     const navigate = useNavigate();
+    const token = getCookieItem(CookiesNames?.ACCESS_TOKEN);
     return (
         <>
             {
@@ -49,21 +51,40 @@ function Links() {
                     }}
                     onClick={() => navigate('/register')}
                 >register as Seller</Button>
-                <Button
-                    disableElevation
-                    variant='outlined'
-                    size='small'
-                    onClick={() => navigate('/login')}
-                    sx={{
-                        borderRadius: 10,
-                        textTransform: 'capitalize',
-                        fontFamily: 'Nunito',
-                        color: '#00398D',
-                        borderColor: '#00398D',
-                        borderWidth: 2,
-                        fontWeight: 'bold'
-                    }}
-                >login</Button>
+                {
+                    token ?
+                        <Button
+                            disableElevation
+                            variant='outlined'
+                            size='small'
+                            onClick={() => navigate('/dashboard')}
+                            sx={{
+                                borderRadius: 10,
+                                textTransform: 'capitalize',
+                                fontFamily: 'Nunito',
+                                color: '#00398D',
+                                borderColor: '#00398D',
+                                borderWidth: 2,
+                                fontWeight: 'bold'
+                            }}
+                        >Dashboard</Button>
+                        :
+                        <Button
+                            disableElevation
+                            variant='outlined'
+                            size='small'
+                            onClick={() => navigate('/login')}
+                            sx={{
+                                borderRadius: 10,
+                                textTransform: 'capitalize',
+                                fontFamily: 'Nunito',
+                                color: '#00398D',
+                                borderColor: '#00398D',
+                                borderWidth: 2,
+                                fontWeight: 'bold'
+                            }}
+                        >login</Button>
+                }
             </Breadcrumbs>
         </>
     )
