@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { db, jwt } from "./database.cjs";
 import { Login } from "./routes/login.js";
-import { getData, getLocation, runQuery } from "./routes/common.js";
+import { getData, runQuery } from "./routes/common.js";
 import { format } from "date-fns";
 import fileUpload from "express-fileupload";
 import { save, update } from "./routes/saveFile.js";
@@ -436,21 +436,6 @@ app.get('/api/categories/:category', async (req, res) => {
                 message: "Not permitted for Operation !"
             })
         }
-    } catch (e) {
-        console.log(e);
-        res.status(500).send(`Server Error ! due to ${e.message}`);
-    }
-});
-
-app.get('/api/get_location', async (req, res) => {
-    try {
-        const { ip } = req.query
-        console.log(ip)
-        const location = await getLocation(ip);
-        res.status(200).send({
-            message: "IP Address Fetched Successfully !",
-            location
-        })
     } catch (e) {
         console.log(e);
         res.status(500).send(`Server Error ! due to ${e.message}`);
