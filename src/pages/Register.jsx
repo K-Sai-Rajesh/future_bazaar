@@ -8,7 +8,6 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import * as Yup from 'yup';
-import Copyright from './CopyRight';
 import CustomInputField from '../common/CustomInputField';
 import { Fab, IconButton, InputAdornment, Paper } from '@mui/material';
 import { useFormik } from 'formik'
@@ -26,11 +25,11 @@ export default function SignUp() {
     const handleSubmit = async () => {
         try {
             if (register?.values?.phone?.length < 10) {
-                snackon("Phone Number Cannot be less than 10 Digits !")
+                snackon({ message: "Phone Number Cannot be less than 10 Digits !", color: 'warning' })
                 return
             }
             const { payload } = await dispatch(Register(register?.values))
-            dispatch(snackon(payload));
+            dispatch(snackon({ message: payload, color: 'success' }));
         } catch (e) {
             console.error(e)
         }
@@ -205,14 +204,12 @@ export default function SignUp() {
             container
             justifyContent={'center'}
             alignItems={'center'}
-            height={'100vh'}
         >
             <Grid
                 item
                 xs={12}
-                sm={8}
                 component={Paper}
-                elevation={9}
+                elevation={0}
                 pb={2}
             >
                 <CssBaseline />
@@ -303,7 +300,7 @@ export default function SignUp() {
                                     fullWidth
                                     variant="contained"
                                     size='small'
-                                    sx={{ mt: 3, mb: 2, textTransform: 'capitalize' }}
+                                    sx={{ mt: 3, mb: 2, textTransform: 'capitalize', fontFamily: "Raleway" }}
                                     disabled={state === null ? true : false}
                                     onClick={() => register.handleSubmit()}
                                 >
@@ -321,11 +318,7 @@ export default function SignUp() {
                             </Grid>
                         </Grid>
                         <Grid container justifyContent="flex-end">
-
-                            <Grid item xs={12} display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
-                                <Link href="/" variant="body2" sx={{ fontFamily: 'Raleway', fontWeight: 'bold', fontSize: '10px' }}>
-                                    Home
-                                </Link>
+                            <Grid item xs={12} display={'flex'} justifyContent={'end'} alignItems={'center'}>
                                 <Link href="/login" variant="body2" sx={{ fontFamily: 'Raleway', fontWeight: 'bold', fontSize: '10px' }}>
                                     Already have an account? Sign in
                                 </Link>
@@ -334,7 +327,6 @@ export default function SignUp() {
                     </Box>
                 </Box>
             </Grid>
-            <Copyright />
         </Grid>
     );
 }

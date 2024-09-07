@@ -1,13 +1,14 @@
 import { useRoutes } from "react-router-dom";
 import { routes } from "./common/routes";
 import {
+  Alert,
   Backdrop,
   CircularProgress,
   Snackbar,
-  Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { snackoff } from "./reducers/slices/snackbar";
+import './App.css'
 
 function App() {
   const route = useRoutes(routes);
@@ -31,13 +32,22 @@ function App() {
         open={open}
         autoHideDuration={3000}
         onClose={handleClose}
-        color={color}
-        message={
-          <Typography fontSize="14px" fontFamily="Raleway" fontWeight="bold">
-            {message}
-          </Typography>
-        }
-      />
+        // color={color}
+        // message={
+        //   <Typography fontSize="14px" fontFamily="Raleway" fontWeight="bold">
+        //     {message}
+        //   </Typography>
+        // }
+      >
+        <Alert
+          onClose={handleClose}
+          severity={color}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {message}
+        </Alert>
+      </Snackbar>
       {route}
     </>
   );

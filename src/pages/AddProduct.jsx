@@ -166,7 +166,8 @@ export default function AddNewProduct() {
                 maxWidth={'lg'}
                 component={Paper}
                 elevation={0}
-                p={3}
+                pt={1}
+                px={2}
                 flexGrow={1}
                 rowGap={2}
                 justifyContent={'space-between'}
@@ -174,21 +175,6 @@ export default function AddNewProduct() {
                     backgroundColor: '#F1F1F1'
                 }}
             >
-                {/* <Grid
-                    item
-                    xs={12}
-                    sm={6}
-                >
-                    <Typography
-                        fontFamily={'Raleway'}
-                        fontSize={15}
-                        fontWeight={'bold'}
-                    >
-                        {
-                            state === null ? "Add Product" : "Edit Product"
-                        }
-                    </Typography>
-                </Grid> */}
                 <Grid
                     item
                     xs={12}
@@ -249,6 +235,9 @@ export default function AddNewProduct() {
                             handleChange={handleChange}
                             name="file"
                             classes="file-uploader-styles"
+                            style={{
+                                width: '100px !important'
+                            }}
                             types={fileTypes}
                         />
                         <Typography
@@ -340,7 +329,6 @@ export default function AddNewProduct() {
                                     <InputAdornment position="end">
                                         <IconButton
                                             aria-label="mrp"
-                                            // onClick={() => setShow(!show)}
                                             edge="center"
                                         >
                                             <TitleOutlined sx={{ fontSize: '20px' }} />

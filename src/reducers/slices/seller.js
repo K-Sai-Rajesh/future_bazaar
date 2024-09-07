@@ -92,7 +92,6 @@ export const DeleteProduct = createAsyncThunk(
             dispatch(loadon(true));
             const url = `${config.BASE_API}/delete_product/${param}`;
             const response = await client.delete(url);
-            console.log(response)
             return response;
         } catch (error) {
             return rejectWithValue(error);

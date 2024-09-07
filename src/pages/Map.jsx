@@ -4,7 +4,6 @@ import {
 import "./styles.css";
 import { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
-import Copyright from "./CopyRight";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function MapLocation() {
@@ -32,7 +31,6 @@ export default function MapLocation() {
             display={'flex'}
             flexDirection={'column'}
             alignItems={'center'}
-            height={'80vh'}
         >
             <Button
                 variant="outlined"
@@ -83,7 +81,6 @@ export default function MapLocation() {
             >
                 <Marker width={50} anchor={[location.latitude, location.longitude]} />
             </Map>
-            <Copyright />
         </Box >
     );
 }

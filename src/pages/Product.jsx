@@ -106,7 +106,6 @@ export default function Product() {
                 justifyContent={'space-between'}
                 sx={{
                     backgroundColor: '#F1F1F1',
-                    height: '70vh'
                 }}
             >
                 <Grid

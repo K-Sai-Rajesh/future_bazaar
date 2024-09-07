@@ -11,8 +11,7 @@ function Layout() {
             <Grid
                 container
                 mt={'90px'}
-
-                // border={'1px solid red'}
+                mb={'90px'}
                 px={2}
             >
                 <Outlet />

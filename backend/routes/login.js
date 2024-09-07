@@ -1,8 +1,18 @@
 export async function Login({ email, password, db }) {
     return new Promise((resolve, reject) => {
         try {
-            console.log(email, password)
-            let query = `select * from Register where email="${email}";`
+            let query = `
+                select 
+                        firstname, lastname, phone, email, 
+                        id, role, registered, appliedDate, 
+                        approvedDate, status, shopStartTime, shopEndTime,
+                        shopDescription, shopName, gst, error, latitude, longitude,
+                        propic
+                    from 
+                        Register 
+                    where 
+                        email="${email}" and userpassword="${password}";
+                `
             db.all(query, (err, row) => {
                 if (err) {
                     console.error(err.message);

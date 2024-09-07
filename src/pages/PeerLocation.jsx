@@ -3,7 +3,6 @@ import {
 } from "pigeon-maps";
 import "./styles.css";
 import { Box, Button } from "@mui/material";
-import Copyright from "./CopyRight";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function PeerLocation() {
@@ -42,7 +41,6 @@ export default function PeerLocation() {
             >
                 <Marker width={50} anchor={state.location} />
             </Map>
-            <Copyright />
         </Box >
     );
 }

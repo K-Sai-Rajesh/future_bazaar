@@ -28,7 +28,7 @@ export default function EnhancedTable({
   status,
   rows,
   headCells,
-  setEdit,
+  // setEdit,
   icon,
   actions,
   rejectSeller,
@@ -74,12 +74,10 @@ export default function EnhancedTable({
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  console.log(status)
-
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%" }} elevation={0}>
-        <TableContainer sx={{ height: "60vh" }}>
+        <TableContainer sx={{ minHeight: "350px", maxHeight:'400px' }}>
           <Table aria-labelledby="tableTitle">
             <TableHead>
               <TableRow>

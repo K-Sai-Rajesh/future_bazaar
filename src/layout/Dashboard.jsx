@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Grid } from "@mui/material";
 import DashboardNav from "./DashboardNav";
 import Copyright from "../pages/CopyRight";
+import FixedBottomNavigation from "./NavigatorBar";
 
 function Dashboard() {
   return (
@@ -10,14 +11,19 @@ function Dashboard() {
       <DashboardNav />
       <Grid
         container
-        mt={"90px"}
-        px={2}
-        pb={3}
+        mt={"75px"}
+        pb={5}
         justifyContent={'center'}
+        sx={{
+          backgroundColor: "#F1F1F1",
+          minHeight: `${window.innerHeight - 105}px`
+        }}
       >
         <Outlet />
       </Grid>
+      <FixedBottomNavigation />
       <Copyright />
+
     </>
   );
 }

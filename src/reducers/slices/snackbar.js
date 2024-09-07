@@ -11,8 +11,9 @@ const snackSlice = createSlice({
     snackon: (state, actions) => {
       return {
         ...state,
-        message: actions.payload,
+        message: actions.payload.message,
         open: true,
+        color: actions.payload.color
       };
     },
     snackoff: (state) => {

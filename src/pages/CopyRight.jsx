@@ -9,7 +9,12 @@ export default function Copyright(props) {
                 backgroundColor: '#222222',
                 position: 'fixed',
                 bottom: 0,
-                height: '30px'
+                height: '30px',
+                display: {
+                    xs: 'none',
+                    md: 'flex'
+                },
+                zIndex: 100
             }}
         >
             <Grid

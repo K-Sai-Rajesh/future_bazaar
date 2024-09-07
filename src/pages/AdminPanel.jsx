@@ -7,6 +7,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import EnhancedTable from "../common/Table";
 import { DoNotDisturbAltOutlined } from "@mui/icons-material";
+import { snackon } from "../reducers/slices/snackbar";
 
 export default function AdminPanel() {
     const dispatch = useDispatch()
@@ -63,10 +64,10 @@ export default function AdminPanel() {
     const Admin = async () => {
         try {
             const { payload } = await dispatch(RegisterData())
-            if (payload?.message) {
-                return
-            }
-            setList(payload)
+            if (typeof (payload) === 'object')
+                setList(payload)
+            else
+                snackon({ message: payload, color: 'error' })
         } catch (e) {
             console.error(e)
         }
@@ -107,7 +108,7 @@ export default function AdminPanel() {
                 maxWidth={'lg'}
                 p={1}
                 sx={{
-                    backgroundColor:'#F1F1F1'
+                    backgroundColor: '#F1F1F1'
                 }}
             >
                 <Grid
@@ -119,7 +120,7 @@ export default function AdminPanel() {
                     <ReviewCard
                         count={list?.filter(seller => seller?.status === 'Approved')?.length}
                         title={"Approved"}
-                        elevation={status === "Approved" ? 9 : 3}
+                        elevation={status === "Approved" ? 5 : 0}
                         setStatus={setStatus}
                         icon={<CheckBoxIcon color={status === "Approved" ? 'info' : ""} sx={{ fontSize: '40px', color: status === "Approved" ? "" : '#9A9A9A' }} />}
                     />
@@ -133,7 +134,7 @@ export default function AdminPanel() {
                     <ReviewCard
                         count={list?.filter(seller => seller?.status === 'Pending')?.length}
                         title={"Pending"}
-                        elevation={status === "Pending" ? 9 : 3}
+                        elevation={status === "Pending" ? 5 : 0}
                         setStatus={setStatus}
                         icon={<PendingActionsIcon color={status === "Pending" ? 'warning' : ""} sx={{ fontSize: '40px', color: status === "Pending" ? "" : "#9A9A9A" }} />}
                     />
@@ -147,7 +148,7 @@ export default function AdminPanel() {
                     <ReviewCard
                         count={list?.filter(seller => seller?.status === 'Rejected')?.length}
                         title={"Rejected"}
-                        elevation={status === "Rejected" ? 9 : 3}
+                        elevation={status === "Rejected" ? 5 : 0}
                         setStatus={setStatus}
                         icon={<DoNotDisturbAltOutlined color={status === "Rejected" ? 'error' : ""} sx={{ fontSize: '40px', color: status === "Rejected" ? "" : "#9A9A9A" }} />}
                     />

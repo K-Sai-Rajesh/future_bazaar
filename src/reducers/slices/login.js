@@ -10,12 +10,12 @@ export const signIn = createAsyncThunk(
     async (params, { rejectWithValue, dispatch }) => {
         try {
             dispatch(loadon(true));
-            const url = `${config.BASE_API}/login`; 
+            const url = `${config.BASE_API}/login`;
             const response = await client.post(url, params);
             setSession(response);
             return Promise.resolve(response);
         } catch (error) {
-            dispatch(snackon(error));
+            dispatch(snackon({ message: error, color: 'error' }));
             return rejectWithValue(error);
         } finally {
             dispatch(loadoff(false));

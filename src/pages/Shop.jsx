@@ -121,7 +121,7 @@ export default function Shop() {
             <Grid
                 item
                 xs={12}
-                sm={5}
+                sm={3.9}
                 md={3.9}
                 p={2}
                 elevation={0}
@@ -142,7 +142,7 @@ export default function Shop() {
             <Grid
                 item
                 xs={12}
-                sm={5.5}
+                sm={3.9}
                 md={3.9}
                 p={2}
                 elevation={0}
@@ -183,7 +183,7 @@ export default function Shop() {
             <Grid
                 item
                 xs={12}
-                sm={5.5}
+                sm={3.9}
                 md={3.9}
                 p={2}
                 elevation={0}

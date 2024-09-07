@@ -8,7 +8,6 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import * as Yup from 'yup';
-import Copyright from './CopyRight';
 import CustomInputField from '../common/CustomInputField';
 import { IconButton, InputAdornment, Paper } from '@mui/material';
 import { useFormik } from 'formik'
@@ -27,10 +26,10 @@ export default function Login() {
     const handleSubmit = async () => {
         const { payload } = await dispatch(signIn(register?.values))
         if (payload?.message === "Login Successful !") {
-            dispatch(snackon(payload?.message));
+            dispatch(snackon({ message: payload?.message, color: 'success' }));
             navigate('/dashboard')
         } else
-            dispatch(snackon(payload?.message));
+            dispatch(snackon({ message: payload?.message, color: 'error' }));
     };
     const register = useFormik({
         initialValues: {
@@ -49,15 +48,12 @@ export default function Login() {
             container
             justifyContent={'center'}
             alignItems={'center'}
-            height={'100vh'}
         >
             <Grid
                 item
                 xs={12}
-                lg={4}
-                sm={8}
                 component={Paper}
-                elevation={9}
+                elevation={0}
                 pb={2}
             >
                 <CssBaseline />
@@ -150,16 +146,13 @@ export default function Login() {
                             fullWidth
                             variant="contained"
                             size='small'
-                            sx={{ mt: 3, mb: 2, textTransform: 'capitalize' }}
+                            sx={{ mt: 3, mb: 2, textTransform: 'capitalize', fontFamily: 'Raleway' }}
                             onClick={register.handleSubmit}
                         >
                             Login
                         </Button>
                         <Grid container>
-                            <Grid item xs={12} display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
-                                <Link href="/" variant="body2" sx={{ fontFamily: 'Raleway', fontWeight: 'bold', fontSize: '10px' }}>
-                                    Home
-                                </Link>
+                            <Grid item xs={12} display={'flex'} justifyContent={'end'} alignItems={'center'}>
                                 <Link href="/register" variant="body2" sx={{ fontFamily: 'Raleway', fontWeight: 'bold', fontSize: '10px' }}>
                                     Get an account? Sign up
                                 </Link>
@@ -168,7 +161,6 @@ export default function Login() {
                     </Box>
                 </Box>
             </Grid>
-            <Copyright />
         </Grid>
     );
 }

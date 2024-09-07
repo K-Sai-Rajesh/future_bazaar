@@ -14,15 +14,27 @@ import { MoreVertOutlined } from "@mui/icons-material";
 import { NavLink, useLocation } from "react-router-dom";
 import { CookiesNames, clearSession, getCookieItem } from "../helpers/cookies";
 import { stringAvatar } from "../helpers/features";
-// import { useSelector } from 'react-redux';
 
 function DashboardNav() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { pathname } = useLocation();
-  const { name, role } = JSON.parse(
+  const { name } = JSON.parse(
     decodeURIComponent(getCookieItem(CookiesNames.USER))
   );
-  const links = ["shop", 'products'];
+  const links = [
+    {
+      link: 'profile/basic info',
+      label: 'profile'
+    },
+    {
+      link: 'account',
+      label: 'account'
+    },
+    {
+      link: 'products',
+      label: 'products'
+    }
+  ]
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -62,33 +74,14 @@ function DashboardNav() {
               alignItems={"center"}
               columnGap={2}
             >
-              {window.innerWidth > 400 && (
-                <div>
-                  <Typography
-                    fontFamily={"Nunito"}
-                    textTransform={"capitalize"}
-                    fontSize={14}
-                    fontWeight={"bold"}
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                    whiteSpace="nowrap"
-                  >
-                    {name}
-                  </Typography>
-                  <Typography
-                    fontFamily={"Nunito"}
-                    textTransform={"capitalize"}
-                    fontSize={10}
-                    fontWeight={"bold"}
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                    whiteSpace="nowrap"
-                  >
-                    {role}
-                  </Typography>
-                </div>
-              )}
-              <Avatar {...stringAvatar(name ? name : "Profile")} />
+              <Avatar {...stringAvatar(name ? name : "Profile")}
+                sx={{
+                  display: {
+                    xs: 'flex',
+                    // lg: 'flex'
+                  }
+                }}
+              />
               <IconButton
                 onClick={handleClick}
                 size="small"
@@ -96,6 +89,12 @@ function DashboardNav() {
                 aria-controls={open ? "account-menu" : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? "true" : undefined}
+                sx={{
+                  display: {
+                    xs: 'none',
+                    lg: 'flex'
+                  }
+                }}
               >
                 <MoreVertOutlined sx={{ fontSize: "30px" }} />
               </IconButton>
@@ -159,7 +158,7 @@ function DashboardNav() {
                     return (
                       <NavLink
                         key={idx}
-                        to={`${item}`}
+                        to={`${item.link}`}
                         exact
                         style={({ isActive }) => ({
                           color: isActive ? "#00398D" : "#3F3D56",
@@ -172,7 +171,7 @@ function DashboardNav() {
                           fontSize={14}
                           fontWeight={"bold"}
                         >
-                          {item}
+                          {item.label}
                         </Typography>
                       </NavLink>
                     );
@@ -185,7 +184,6 @@ function DashboardNav() {
                 size="small"
                 onClick={() => {
                   clearSession(true);
-                  // navigate('/login')
                 }}
                 sx={{
                   borderRadius: 10,

@@ -31,24 +31,37 @@ const authMiddleware = async (req, res, next) => {
     }
 };
 
-const authRoutes = [
-    "/dashboard",
-    "/api/admin",
-    '/api/seller_status_update',
-    '/api/add_product',
-    '/api/categories',
-    '/api/categories/:id',
-    '/api/get_products',
-    '/api/edit_product',
-    '/api/delete_product/:id',
-    "/api/storage",
-    '/api/get_seller_attributes'
-];
+const isAdmin = async (req, res, next) => {
+    try {
+        const { user } = req;
+        if (user.role === 'admin')
+            next();
+        else
+            res.status(403).send("Invalid Access !");
+    } catch (error) {
+        res.status(400).send("Invalid Access");
+    }
+};
+
+const isApproved = async (req, res, next) => {
+    try {
+        const { user } = req;
+        let query = `select status from Register where id="${user?.id}"`
+        let result = await getData(query, db)
+        if (result[0].status === 'Approved') {
+            next();
+            return
+        }
+        res.status(403).send("Invalid Access !");
+    } catch (error) {
+        res.status(400).send("Invalid Access");
+    }
+}
 
 app.use(express.json());
 app.use(cors());
 app.use("/public", express.static('assets'))
-app.use(authRoutes, authMiddleware);
+// app.use(authRoutes, authMiddleware);
 app.use(fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 },
 }));
@@ -94,9 +107,7 @@ app.get('/api/get_product/:id', async (req, res) => {
 app.post("/api/login", async (req, res) => {
     const { email, password } = req.body;
     try {
-        // console.log(email, password)
         const result = await Login({ email, password, db });
-        // console.log(result)
         if (result?.length === 1) {
             if (result[0].status === "Approved") {
                 const token = jwt.sign(result[0], secret_key);
@@ -198,9 +209,10 @@ app.post("/api/register", async (req, res) => {
 
 // ---- routes protected 
 
-app.get('/api/admin', async (req, res) => {
+app.get('/api/admin', authMiddleware, isAdmin, async (req, res) => {
     try {
         const { user } = req
+
         if (user.role === 'admin') {
             const query = `select * from Register where role="seller";`;
             const result = await getData(query, db);
@@ -216,7 +228,7 @@ app.get('/api/admin', async (req, res) => {
     }
 });
 
-app.post('/api/seller_status_update', async (req, res) => {
+app.post('/api/seller_status_update', authMiddleware, async (req, res) => {
     try {
         const { user } = req
         const { id, status, email, password } = req.body
@@ -258,7 +270,7 @@ app.post('/api/seller_status_update', async (req, res) => {
     }
 });
 
-app.post('/api/add_product', async (req, res) => {
+app.post('/api/add_product', authMiddleware, async (req, res) => {
     try {
         const { user } = req
         const { title, description, stock, mrp, discount, discountedPrice, category, subcategory } = req.body
@@ -287,7 +299,7 @@ app.post('/api/add_product', async (req, res) => {
     }
 });
 
-app.post('/api/edit_product', async (req, res) => {
+app.post('/api/edit_product', authMiddleware, async (req, res) => {
     try {
         const { user } = req
         const { title, description, stock, mrp, discount, discountedPrice, category, subcategory, productId } = req.body
@@ -367,7 +379,7 @@ app.post('/api/edit_product', async (req, res) => {
     }
 });
 
-app.get('/api/get_products', async (req, res) => {
+app.get('/api/get_products', authMiddleware, async (req, res) => {
     try {
         const { user } = req;
 
@@ -445,7 +457,7 @@ app.get('/api/get_location', async (req, res) => {
     }
 });
 
-app.delete('/api/delete_product/:id', async (req, res) => {
+app.delete('/api/delete_product/:id', authMiddleware, async (req, res) => {
     try {
         const { user } = req
         const { id } = req.params
@@ -475,7 +487,7 @@ app.delete('/api/delete_product/:id', async (req, res) => {
     }
 });
 
-app.get('/api/get_seller/:id', async (req, res) => {
+app.get('/api/get_seller/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params
         console.log(id)
@@ -503,7 +515,7 @@ app.get('/api/get_seller/:id', async (req, res) => {
     }
 });
 
-app.get('/api/get_seller_attributes', async (req, res) => {
+app.get('/api/get_seller_attributes', authMiddleware, async (req, res) => {
     try {
         const { user } = req
         let query = `select * from views where owner="${user?.id}"`
@@ -516,6 +528,82 @@ app.get('/api/get_seller_attributes', async (req, res) => {
             result,
             message: "Seller Fetched Successfully !",
         })
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
+
+app.post('/api/update_profile', authMiddleware, async (req, res) => {
+    try {
+        const { user } = req
+        let query = `select status from Register where id="${user?.id}"`
+        let result = await getData(query, db)
+        if (result[0].status === 'Approved') {
+            const profile = req.body
+            query = `
+                update 
+                    Register
+                set
+                    firstname="${profile.firstname}",
+                    lastname="${profile.lastname}",
+                    phone=${profile.phone},
+                    shopStartTime="${profile.shopStartTime}",
+                    shopEndTime="${profile.shopEndTime}",
+                    shopName="${profile.shopName}",
+                    gst="${profile.gst}"
+                where
+                    id=${profile.id};                    
+            `;
+            await runQuery(query, db);
+            query = `select * from Register where id=${profile.id};`
+            result = await getData(query, db);
+            res.status(200).send({
+                result: result[0],
+                message: "Updated Successfully !",
+            })
+            return
+        }
+        res.status(200).send({
+            message: "Unathorised Access !",
+        })
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
+
+app.post('/api/update_security', authMiddleware, isApproved, async (req, res) => {
+    try {
+        const { user } = req
+        const security = req.body
+        let query = `
+                select 
+                    userpassword 
+                from
+                    Register
+                where
+                    id=${user.id};
+            `;
+        let result = await getData(query, db);
+        if (result[0].userpassword === security.oldpassword) {
+            query = `
+                update 
+                    Register
+                set
+                    userpassword="${security.newpassword}"
+                where
+                    id=${user.id};                    
+            `
+            result = await runQuery(query, db);
+            res.status(200).send({
+                message: "Password updated successfully !",
+            })
+        } else
+            res.status(403).send({
+                message: "Password is incorrect !",
+            })
+
     } catch (e) {
         console.log(e);
         res.status(500).send(`Server Error ! due to ${e.message}`);

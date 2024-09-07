@@ -87,7 +87,7 @@ export default function Products() {
             maxWidth={'lg'}
             component={Paper}
             elevation={0}
-            p={3}
+            p={1}
             flexGrow={1}
             rowGap={2}
             justifyContent={'space-between'}

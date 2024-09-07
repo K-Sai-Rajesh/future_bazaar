@@ -24,7 +24,8 @@ function NAVBAR() {
                 container
                 sx={{
                     position: 'fixed',
-                    top: 0
+                    top: 0,
+                    zIndex: 100
                 }}
                 p={1}
             >

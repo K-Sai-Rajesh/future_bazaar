@@ -1,13 +1,8 @@
 import { Outlet } from "react-router-dom";
-import Layout from "../layout/Layout";
 import Login from "../pages/Login";
 import SignUp from "../pages/Register";
-// import Landing from "../pages/Landing";
-// import Login from "../pages/Login";
 import Auth from "./Auth";
-import LandingPage from "../pages/LandingPage";
 import AdminPanel from "../pages/AdminPanel";
-// import SellerDashboard from "../pages/AddProduct";
 import Products from "../pages/Products";
 import AddNewProduct from "../pages/AddProduct";
 import Product from "../pages/Product";
@@ -15,17 +10,19 @@ import MapLocation from "../pages/Map";
 import PeerLocation from "../pages/PeerLocation";
 import Shop from "../pages/Shop";
 import Seller from "../pages/Seller";
-// import RegisterPage from "../pages/Register"`;
-// import NotFound from "../pages/404";
+import Profile from "../pages/profile/Profile";
+import Blog from "../pages/Landing/Landing";
+import BasicInfo from "../pages/profile/BasicInfo";
+import Security from "../pages/profile/Security";
 
 export const routes = [
   {
     path: "",
-    element: <Layout />,
+    element: <Blog />,
     children: [
       {
         path: "",
-        element: <LandingPage />,
+        // element: <LandingPage />,
       },
       {
         path: "product/:id",
@@ -43,15 +40,15 @@ export const routes = [
         path: 'map',
         element: <MapLocation />
       },
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "register",
+        element: <SignUp />,
+      },
     ],
-  },
-  {
-    path: "login",
-    element: <Login />,
-  },
-  {
-    path: "register",
-    element: <SignUp />,
   },
   {
     path: "/dashboard",
@@ -66,6 +63,20 @@ export const routes = [
         element: <AdminPanel />,
       },
       {
+        path: "profile",
+        element: <Profile />,
+        children: [
+          {
+            path: 'basic info',
+            element: <BasicInfo />
+          },
+          {
+            path: 'security',
+            element: <Security />
+          }
+        ]
+      },
+      {
         path: "add product",
         element: <AddNewProduct />,
       },
@@ -78,7 +89,7 @@ export const routes = [
         element: <Products />
       },
       {
-        path: "shop",
+        path: "account",
         element: <Shop />
       }
     ],

@@ -28,7 +28,6 @@ export function getSession() {
 export const setSession = (response) => {
     const { accessToken, refreshToken, data } = response;
     const userData = JSON.stringify(data);
-
     const tokenExpiry = getTokenExpiry();
     setCookie(CookiesNames.ACCESS_TOKEN, accessToken, { expires: tokenExpiry });
     setCookie(CookiesNames.REFRESH_TOKEN, refreshToken, { expires: tokenExpiry });
