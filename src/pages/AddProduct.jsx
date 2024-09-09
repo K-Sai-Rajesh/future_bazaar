@@ -95,6 +95,7 @@ export default function AddNewProduct() {
         try {
             const { payload } = await dispatch(Category())
             if (payload) {
+                console.log(payload)
                 setCategories(prev => {
                     return {
                         ...prev,
@@ -102,8 +103,9 @@ export default function AddNewProduct() {
                     }
                 })
                 if (payload[0]) {
+                    console.log(payload[0].title)
                     register.setFieldValue('category', payload[0].title)
-                    getSubCategories(payload[0].title)
+                    // getSubCategories(payload[0].title)
                 }
             }
         } catch (e) {
@@ -140,13 +142,11 @@ export default function AddNewProduct() {
             ]
             register.setFieldValue('id', ids)
             register.setFieldValue('paths', paths)
-            // register.setFieldValue('productId', paths)
 
             keys.forEach(key => {
                 register.setFieldValue(key, payload.result[0][key])
             })
             setFiles(paths)
-            // console.log(payload.result[0], paths)
         } catch (e) {
             console.error(e)
         }
@@ -158,6 +158,12 @@ export default function AddNewProduct() {
         }
         // eslint-disable-next-line
     }, [])
+    useEffect(() => {
+        if (register.values.category) {
+            getSubCategories(register.values.category)
+        }
+        // eslint-disable-next-line
+    }, [register.values.category])
 
     return (
         <>
@@ -245,7 +251,6 @@ export default function AddNewProduct() {
                             fontFamily='Raleway'
                             fontWeight='800'
                             color="#9E9E9E"
-                            // textAlign={'end'}
                             mt={1}
                         >
                             {
@@ -323,7 +328,7 @@ export default function AddNewProduct() {
                                 name="title"
                                 autoComplete="product"
                                 size='small'
-                                value={register?.values?.title}
+                                value={register?.values?.title === null ? "" : register?.values?.title}
                                 onChange={register.handleChange}
                                 endAdornment={
                                     <InputAdornment position="end">
@@ -418,7 +423,7 @@ export default function AddNewProduct() {
                                         : ""
                                 }
                             >
-                                <option value={""}>Select</option>
+                                <option valu e={""}>Select</option>
                                 {categories.sub?.map((option, idx) => {
                                     return <option key={idx} value={option.subcategory}>{option.subcategory}</option>
                                 })}

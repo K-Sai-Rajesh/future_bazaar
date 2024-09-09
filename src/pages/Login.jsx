@@ -27,9 +27,8 @@ export default function Login() {
         const { payload } = await dispatch(signIn(register?.values))
         if (payload?.message === "Login Successful !") {
             dispatch(snackon({ message: payload?.message, color: 'success' }));
-            navigate('/dashboard')
-        } else
-            dispatch(snackon({ message: payload?.message, color: 'error' }));
+            navigate('/auth/account')
+        }
     };
     const register = useFormik({
         initialValues: {

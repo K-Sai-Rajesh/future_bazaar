@@ -1,14 +1,20 @@
 import { Avatar, Badge, Box, Chip, createTheme, Grid, Paper, Stack, ThemeProvider, Typography } from "@mui/material";
 import logo from '../../assets/images/sellerbg.jpg'
 import { DriveFolderUploadOutlined } from "@mui/icons-material";
-// import { getSession } from "../../helpers/cookies";
 import getBlogTheme from "../Landing/theme/getBlogTheme";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateprofilepic } from "../../reducers/slices/register";
+import { useState } from "react";
+import { CookiesNames, getCookieItem, getSession, setSession } from "../../helpers/cookies";
+import { snackon } from "../../reducers/slices/snackbar";
 
 export default function Profile() {
-  // const { user } = getSession()
+  const { user } = getSession()
   const { pathname } = useLocation()
+  const dispatch = useDispatch()
   const path = pathname.split('/')[pathname.split('/').length - 1].replace("%20", " ")
+  const [propic, setPropic] = useState(user.propic === null ? logo : `http://localhost:8080/${user.propic}`)
   const blogTheme = createTheme(getBlogTheme('light'));
   const navigate = useNavigate();
   const links = [
@@ -21,7 +27,22 @@ export default function Profile() {
       label: 'Security'
     },
   ]
-                                                              // 72 + 56  / 30
+
+  async function handleProPicChange(e) {
+    try {
+      const { files } = e.target;
+      const { payload } = await dispatch(updateprofilepic({ propic: files[0] }))
+      if (payload.url) {
+        setPropic(`http://localhost:8080/${payload.url}`)
+        const accessToken = getCookieItem(CookiesNames.ACCESS_TOKEN)
+        setSession({ accessToken, refreshToken: accessToken, data: { ...user, propic: payload.url } })
+        dispatch(snackon({ message: payload.message, color: 'success' }))
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   return (
     <ThemeProvider theme={blogTheme}>
       <Grid
@@ -44,6 +65,7 @@ export default function Profile() {
               horizontal: 'right',
             }}
             overlap="circular"
+            onClick={() => document.getElementById('propic').click()}
             badgeContent={
               <DriveFolderUploadOutlined
                 sx={{
@@ -60,13 +82,14 @@ export default function Profile() {
           >
             <Avatar
               alt="Remy Sharp"
-              src={logo}
+              src={propic}
               sx={{
                 width: 256,
                 height: 256,
                 backgroundColor: '#fff'
               }}
             />
+            <input id="propic" type="file" onChange={handleProPicChange} style={{ display: 'none' }} />
           </Badge>
         </Grid>
         <Grid
@@ -78,7 +101,7 @@ export default function Profile() {
           rowGap={1}
           flexDirection={'column'}
           p={1}
-        >                               
+        >
           <Stack
             spacing={{ xs: 1, sm: 2 }}
             direction="row"

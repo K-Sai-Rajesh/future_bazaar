@@ -114,7 +114,7 @@ export default function Products() {
                         fontWeight: '600',
                         px: 2
                     }}
-                    onClick={() => navigate('/dashboard/add product')}
+                    onClick={() => navigate('/auth/add product')}
                 >
                     Add Product
                 </Button>

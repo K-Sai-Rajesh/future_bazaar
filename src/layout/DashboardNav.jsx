@@ -11,30 +11,16 @@ import {
 } from "@mui/material";
 import logo from "../assets/images/futurebazaar.png";
 import { MoreVertOutlined } from "@mui/icons-material";
-import { NavLink, useLocation } from "react-router-dom";
-import { CookiesNames, clearSession, getCookieItem } from "../helpers/cookies";
-import { stringAvatar } from "../helpers/features";
+import { NavLink } from "react-router-dom";
+import { CookiesNames, clearSession, getCookieItem, getSession } from "../helpers/cookies";
+import { links, stringAvatar } from "../helpers/features";
 
 function DashboardNav() {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { pathname } = useLocation();
+  const { user } = getSession();
   const { name } = JSON.parse(
     decodeURIComponent(getCookieItem(CookiesNames.USER))
   );
-  const links = [
-    {
-      link: 'profile/basic info',
-      label: 'profile'
-    },
-    {
-      link: 'account',
-      label: 'account'
-    },
-    {
-      link: 'products',
-      label: 'products'
-    }
-  ]
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -136,25 +122,7 @@ function DashboardNav() {
               >
                 <Box display={"flex"} flexDirection={"column"} rowGap={1}>
 
-                  <NavLink
-                    to={`/dashboard`}
-                    exact
-                    style={() => ({
-                      color: pathname === "/dashboard" ? "#00398D" : "#3F3D56",
-                      textDecorationLine: pathname === "/dashboard" ? "underline" : "none",
-                    })}
-                  >
-                    <Typography
-                      fontFamily={"Nunito"}
-                      textTransform={"capitalize"}
-                      fontSize={14}
-                      fontWeight={"bold"}
-                    >
-                      Dashboard
-                    </Typography>
-                  </NavLink>
-
-                  {links?.map((item, idx) => {
+                  {links.filter(link => link.access.includes(user.role))?.map((item, idx) => {
                     return (
                       <NavLink
                         key={idx}

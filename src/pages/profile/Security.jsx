@@ -5,7 +5,6 @@ import { UpdateSecurity } from "../../reducers/slices/register";
 import { useDispatch } from "react-redux";
 import * as Yup from 'yup';
 import { useFormik } from "formik";
-import { snackon } from "../../reducers/slices/snackbar";
 import CustomInputField from "../../common/CustomInputField";
 
 export default function Security() {

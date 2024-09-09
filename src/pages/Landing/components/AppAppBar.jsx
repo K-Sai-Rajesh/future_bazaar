@@ -86,7 +86,7 @@ export default function AppAppBar() {
                             alignItems: 'center',
                         }}
                     >
-                        <Button href={token ? '/dashboard' : '/login'} color="primary" variant="text" size="small"
+                        <Button href={token ? '/auth/account' : '/login'} color="primary" variant="text" size="small"
                             sx={{
                                 fontFamily: 'Raleway'
                             }}
@@ -163,7 +163,7 @@ export default function AppAppBar() {
                                     </Button>
                                 </MenuItem>
                                 <MenuItem>
-                                    <Button href={token ? '/dashboard' : '/login'} color="primary" variant="outlined" fullWidth
+                                    <Button href={token ? '/auth/account' : '/login'} color="primary" variant="outlined" fullWidth
                                         sx={{
                                             fontFamily: 'Raleway'
                                         }}

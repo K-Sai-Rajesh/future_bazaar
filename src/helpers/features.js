@@ -133,7 +133,6 @@ export const profileHeaders = [
   }
 ]
 
-
 export const securityHeaders = [
   {
     name: 'oldpassword',
@@ -153,4 +152,59 @@ export const securityHeaders = [
     type: 'password',
     disable: false
   },
+]
+
+
+export const links = [
+  {
+    link: 'admin',
+    label: 'admin',
+    access: ['admin']
+  },
+  {
+    link: 'profile/basic info',
+    label: 'profile',
+    access: ['admin', 'seller', 'customer']
+  },
+  {
+    link: 'account',
+    label: 'account',
+    access: ['admin', 'seller', 'customer']
+  },
+  {
+    link: 'products',
+    label: 'products',
+    access: ['admin', 'seller']
+  }
+]
+
+export const authRoutes = [
+  {
+    route: 'basic info',
+    access: ['admin', 'seller', 'customer']
+  },
+  {
+    route: 'security',
+    access: ['admin', 'seller', 'customer']
+  },
+  {
+    route: 'account',
+    access: ['admin', 'seller', 'customer']
+  },
+  {
+    route: 'products',
+    access: ['admin', 'seller']
+  },
+  {
+    route: 'add product',
+    access: ['admin', 'seller']
+  },
+  {
+    route: 'edit product',
+    access: ['admin', 'seller']
+  },
+  {
+    route: 'admin',
+    access: ['admin']
+  }
 ]

@@ -14,6 +14,7 @@ import Profile from "../pages/profile/Profile";
 import Blog from "../pages/Landing/Landing";
 import BasicInfo from "../pages/profile/BasicInfo";
 import Security from "../pages/profile/Security";
+import NotFound from "../pages/NotFound";
 
 export const routes = [
   {
@@ -21,8 +22,8 @@ export const routes = [
     element: <Blog />,
     children: [
       {
-        path: "",
-        // element: <LandingPage />,
+        path: "404",
+        element: <NotFound />,
       },
       {
         path: "product/:id",
@@ -51,7 +52,7 @@ export const routes = [
     ],
   },
   {
-    path: "/dashboard",
+    path: "/auth",
     element: (
       <Auth>
         <Outlet />
@@ -59,7 +60,7 @@ export const routes = [
     ),
     children: [
       {
-        path: "",
+        path: "admin",
         element: <AdminPanel />,
       },
       {
@@ -93,10 +94,6 @@ export const routes = [
         element: <Shop />
       }
     ],
-  },
-  {
-    path: "404",
-    // element: <NotFound />,
   },
   {
     path: "dashboard/*",

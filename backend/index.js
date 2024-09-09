@@ -61,7 +61,6 @@ const isApproved = async (req, res, next) => {
 app.use(express.json());
 app.use(cors());
 app.use("/public", express.static('assets'))
-// app.use(authRoutes, authMiddleware);
 app.use(fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 },
 }));
@@ -77,6 +76,7 @@ app.listen(8080, async () => {
 
 
 //--- routes not protected 
+
 app.get('/api/get_product/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -204,6 +204,79 @@ app.post("/api/register", async (req, res) => {
     } catch (e) {
         console.log(e);
         res.status(500).send(`Registration Failed ! due to ${e.message}`);
+    }
+});
+
+app.get('/api/get_seller/:id', async (req, res) => {
+    try {
+        const { id } = req.params
+        console.log(id)
+        // const location = await getLocation(ip);
+        let query = `
+            select 
+                firstname, lastname, status, shopStartTime, shopEndTime, shopName, gst, latitude, longitude, error, shopPhoneNumber, propic
+            from 
+                Register
+            where 
+                id=${id};
+        `
+        const result = await getData(query, db)
+
+        query = `insert into views (viewed, owner, type) values ("${id}","${id}","profile"); `
+        await runQuery(query, db);
+
+        res.status(200).send({
+            result,
+            message: "Seller Fetched Successfully !",
+        })
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
+
+app.get('/api/get_products/:seller_id', async (req, res) => {
+    try {
+        const { seller_id } = req.params;
+
+        let query = `
+            select 
+                title, description, mrp, discountedPrice, path, id, shop, category, subcategory
+            from 
+                products
+            where 
+                owner=${seller_id};
+        `
+        const result = await getData(query, db)
+        const groupedCategories = result.reduce((result, obj) => {
+            (result[obj.category] = result[obj.category] || []).push(obj);
+            return result;
+        }, {});
+        const splicedArray = Object.keys(groupedCategories).splice(0, 3)
+        let data = {};
+        splicedArray.forEach(item => {
+            const groupedCategoryData = groupedCategories[item].reduce((result, obj) => {
+                (result[obj.title] = result[obj.title] || []).push(obj);
+                return result;
+            }, {})
+            let newData = data[item] = Object.keys(groupedCategoryData).splice(0, 2).map(key => {
+                return { [key]: groupedCategoryData[key] }
+            })
+            // console.log(newData)
+            let segregate = {};
+            newData.forEach(item => {
+                // segregate[()]
+                console.log(Object.values(item)[0].map(item => item.path))
+            })
+        })
+
+        res.status(200).send({
+            result: data,
+            message: "Products Fetched Successfully !",
+        })
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
     }
 });
 
@@ -407,16 +480,9 @@ app.get('/api/get_products', authMiddleware, async (req, res) => {
 
 app.get('/api/categories', async (req, res) => {
     try {
-        const { user } = req
-        if (user.role === 'seller' || user.role === 'admin') {
-            const query = "select * from categories;"
-            const result = await getData(query, db)
-            res.status(200).send(result)
-        } else {
-            res.status(404).send({
-                message: "Not permitted for Operation !"
-            })
-        }
+        const query = "select * from categories;"
+        const result = await getData(query, db)
+        res.status(200).send(result)
     } catch (e) {
         console.log(e);
         res.status(500).send(`Server Error ! due to ${e.message}`);
@@ -425,17 +491,10 @@ app.get('/api/categories', async (req, res) => {
 
 app.get('/api/categories/:category', async (req, res) => {
     try {
-        const { user } = req
         const { category } = req.params
-        if (user.role === 'seller' || user.role === 'admin') {
-            const query = `select * from subcategory where category="${category}";`;
-            const result = await getData(query, db)
-            res.status(200).send(result)
-        } else {
-            res.status(404).send({
-                message: "Not permitted for Operation !"
-            })
-        }
+        const query = `select * from subcategory where category="${category}";`;
+        const result = await getData(query, db)
+        res.status(200).send(result)
     } catch (e) {
         console.log(e);
         res.status(500).send(`Server Error ! due to ${e.message}`);
@@ -469,34 +528,6 @@ app.delete('/api/delete_product/:id', authMiddleware, async (req, res) => {
         res.status(500).send({
             message: "Server Error !"
         })
-    }
-});
-
-app.get('/api/get_seller/:id', authMiddleware, async (req, res) => {
-    try {
-        const { id } = req.params
-        console.log(id)
-        // const location = await getLocation(ip);
-        let query = `
-            select 
-                firstname, lastname, status, shopStartTime, shopEndTime, shopName, gst, latitude, longitude, error, shopPhoneNumber
-            from 
-                Register
-            where 
-                id=${id};
-        `
-        const result = await getData(query, db)
-
-        query = `insert into views (viewed, owner, type) values ("${id}","${id}","profile"); `
-        await runQuery(query, db);
-
-        res.status(200).send({
-            result,
-            message: "Seller Fetched Successfully !",
-        })
-    } catch (e) {
-        console.log(e);
-        res.status(500).send(`Server Error ! due to ${e.message}`);
     }
 });
 
@@ -588,6 +619,78 @@ app.post('/api/update_security', authMiddleware, isApproved, async (req, res) =>
             res.status(403).send({
                 message: "Password is incorrect !",
             })
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
+
+app.post('/api/update_profile_picture', authMiddleware, isApproved, async (req, res) => {
+    try {
+        const { user } = req
+        const pathname = path.join(process.cwd(), 'assets', `${user.id}`, `profilepic`);
+        const file = req.files.propic
+        if (!fs.existsSync(pathname)) {
+            fs.mkdir(pathname, { recursive: true }, (err) => {
+                if (err) {
+                    res.status(500).send(`${file.name} was not saved !`);
+                    console.error(err)
+                    throw err
+                }
+                else {
+                    file.mv(path.join(pathname, `${file.name}`), async (err) => {
+                        if (err) {
+                            console.log(err)
+                            res.status(500).send(`${file.name} was not saved !`);
+                            return
+                        }
+                        else {
+                            let query = `
+                                    update 
+                                        Register
+                                    set
+                                        propic="${path.join('public', `${user.id}`, `profilepic`, `${file.name}`)}"
+                                    where
+                                        id=${user.id};
+                                `
+                            console.log(query)
+                            await runQuery(query, db)
+                            res.status(200).send({
+                                message: "Profile Updation Successful !",
+                                url: path.join('public', `${user.id}`, `profilepic`, `${file.name}`)
+                            })
+                            return
+                        }
+                    })
+                }
+            });
+        } else if (fs.existsSync(pathname))
+            file.mv(path.join(pathname, `${file.name}`), async (err) => {
+                if (err) {
+                    console.log(err)
+                    res.status(500).send(`${file.name} was not saved !`);
+                    return
+                }
+                else {
+                    let query = `
+                            update 
+                                Register
+                            set
+                                propic="${path.join('public', `${user.id}`, `profilepic`, `${file.name}`)}"
+                            where
+                                id=${user.id};
+                        `
+                    console.log(query)
+                    await runQuery(query, db)
+                    res.status(200).send({
+                        message: "Profile Updation Successful !",
+                        url: path.join('public', `${user.id}`, `profilepic`, `${file.name}`)
+                    })
+                    return
+                }
+            })
+
 
     } catch (e) {
         console.log(e);

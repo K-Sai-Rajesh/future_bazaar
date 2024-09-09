@@ -265,7 +265,7 @@ export default function EnhancedTable({
                                       <IconButton onClick={() => navigate(`/product/${row?.productId}`)}>
                                         <VisibilityOutlined color="info" />
                                       </IconButton>
-                                      <IconButton onClick={() => navigate('/dashboard/edit product', { state: row?.productId })}>
+                                      <IconButton onClick={() => navigate('/auth/edit product', { state: row?.productId })}>
                                         <EditNoteOutlined color="primary" />
                                       </IconButton>
                                       <IconButton onClick={() => DeleteProduct(row?.productId)}>

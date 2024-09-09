@@ -8,7 +8,7 @@ import getBlogTheme from './theme/getBlogTheme';
 import { Outlet } from 'react-router-dom';
 
 export default function Blog() {
-    const blogTheme = createTheme(getBlogTheme('light'));   
+    const blogTheme = createTheme(getBlogTheme('light'));
 
     return (
         <ThemeProvider theme={blogTheme}>

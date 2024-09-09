@@ -24,6 +24,7 @@ export const Register = createAsyncThunk(
     }
   }
 );
+
 export const UpdateProfile = createAsyncThunk(
   "updateProfile",
   async ({ profile }, { rejectWithValue, dispatch }) => {
@@ -43,6 +44,7 @@ export const UpdateProfile = createAsyncThunk(
     }
   }
 );
+
 export const UpdateSecurity = createAsyncThunk(
   "updateSecurity",
   async ({ security }, { rejectWithValue, dispatch }) => {
@@ -64,12 +66,43 @@ export const UpdateSecurity = createAsyncThunk(
   }
 );
 
+export const updateprofilepic = createAsyncThunk(
+  "updateprofilepic",
+  async (params, { rejectWithValue, dispatch }) => {
+    try {
+      dispatch(loadon(true));
+      console.log(params)
+      const headers = { "Content-Type": "multipart/form-data" }
+      const url = `${config.BASE_API}/update_profile_picture`;
+      const response = await client.post(url, params, headers);
+      dispatch(snackon({ message: response.message, color: 'success' }));
+      return Promise.resolve(response);
+    } catch (error) {
+      dispatch(snackon({ message: error.message, color: 'error' }));
+      if (error === "Invalid token ! Please Login.") {
+        clearSession(true);
+      }
+      return rejectWithValue(error);
+    } finally {
+      dispatch(loadoff(false));
+    }
+  }
+);
+
 const registerSlice = createSlice({
   name: "register",
   initialState: {},
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(updateprofilepic.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateprofilepic.fulfilled, () => { })
+      .addCase(updateprofilepic.rejected, (state) => {
+        state.loading = false;
+      })
+
       .addCase(UpdateSecurity.pending, (state) => {
         state.loading = true;
       })
