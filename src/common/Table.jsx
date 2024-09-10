@@ -76,8 +76,8 @@ export default function EnhancedTable({
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Paper sx={{ width: "100%" }} elevation={0}>
-        <TableContainer sx={{ minHeight: "350px", maxHeight:'400px' }}>
+      <Paper sx={{ width: "100%" }} elevation={12}>
+        <TableContainer sx={{ minHeight: "350px", maxHeight: '400px' }}>
           <Table aria-labelledby="tableTitle">
             <TableHead>
               <TableRow>

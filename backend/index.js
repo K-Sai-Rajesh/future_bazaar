@@ -162,14 +162,15 @@ app.post("/api/register", async (req, res) => {
                             gst,
                             phone, 
                             email, 
-                            password, 
+                            userpassword, 
                             role, 
                             registered, 
                             appliedDate, 
                             status,
                             error,
                             latitude,
-                            longitude
+                            longitude,
+                            category
                         )
                         values
                         (
@@ -190,7 +191,8 @@ app.post("/api/register", async (req, res) => {
                             "Pending",
                             "${register.error}",
                             "${register.latitude}",
-                            "${register.longitude}"
+                            "${register.longitude}",
+                            "${register.category}"
                         );
                     `;
             await runQuery(query, db);
@@ -214,7 +216,8 @@ app.get('/api/get_seller/:id', async (req, res) => {
         // const location = await getLocation(ip);
         let query = `
             select 
-                firstname, lastname, status, shopStartTime, shopEndTime, shopName, gst, latitude, longitude, error, shopPhoneNumber, propic
+                firstname, lastname, status, shopStartTime, shopEndTime, shopName, 
+                gst, latitude, longitude, error, shopPhoneNumber, propic, category
             from 
                 Register
             where 
@@ -226,7 +229,7 @@ app.get('/api/get_seller/:id', async (req, res) => {
         await runQuery(query, db);
 
         res.status(200).send({
-            result,
+            result: result[0],
             message: "Seller Fetched Successfully !",
         })
     } catch (e) {
@@ -235,43 +238,52 @@ app.get('/api/get_seller/:id', async (req, res) => {
     }
 });
 
-app.get('/api/get_products/:seller_id', async (req, res) => {
+app.get('/api/get_products/:seller_id/:sub', async (req, res) => {
     try {
-        const { seller_id } = req.params;
-
+        const { seller_id, sub } = req.params;
+        // const { sub } = req.query
+        // console.log(sub)
         let query = `
             select 
                 title, description, mrp, discountedPrice, path, id, shop, category, subcategory
             from 
                 products
             where 
-                owner=${seller_id};
-        `
+                owner=${seller_id} 
+                ${sub === 'all' ? '' : ` and subcategory="${sub}"`};
+        `;
         const result = await getData(query, db)
         const groupedCategories = result.reduce((result, obj) => {
             (result[obj.category] = result[obj.category] || []).push(obj);
             return result;
         }, {});
-        const splicedArray = Object.keys(groupedCategories).splice(0, 3)
-        let data = {};
-        splicedArray.forEach(item => {
-            const groupedCategoryData = groupedCategories[item].reduce((result, obj) => {
-                (result[obj.title] = result[obj.title] || []).push(obj);
-                return result;
-            }, {})
-            let newData = data[item] = Object.keys(groupedCategoryData).splice(0, 2).map(key => {
-                return { [key]: groupedCategoryData[key] }
-            })
-            // console.log(newData)
-            let segregate = {};
-            newData.forEach(item => {
-                // segregate[()]
-                console.log(Object.values(item)[0].map(item => item.path))
-            })
-        })
 
         res.status(200).send({
-            result: data,
+            result: groupedCategories,
+            message: "Products Fetched Successfully !",
+        })
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
+
+app.get('/api/get_products/:seller_id/:category', async (req, res) => {
+    try {
+        const { seller_id, category } = req.params;
+        let query = `
+            select 
+                title, description, mrp, discountedPrice, path, id, shop, category, subcategory
+            from 
+                products
+            where 
+                owner=${seller_id} and
+                category="${category}";
+        `;
+        const result = await getData(query, db)
+
+        res.status(200).send({
+            result,
             message: "Products Fetched Successfully !",
         })
     } catch (e) {

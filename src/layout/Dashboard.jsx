@@ -11,13 +11,9 @@ function Dashboard() {
       <DashboardNav />
       <Grid
         container
-        mt={"75px"}
+        mt={"55px"}
         pb={5}
         justifyContent={'center'}
-        sx={{
-          backgroundColor: "#F1F1F1",
-          minHeight: `${window.innerHeight - 105}px`
-        }}
       >
         <Outlet />
       </Grid>

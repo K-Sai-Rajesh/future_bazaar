@@ -1,14 +1,13 @@
 import { Box, Chip, InputLabel, Stack, Typography } from "@mui/material";
 import { profileHeaders } from "../../helpers/features";
 import React, { useState } from "react";
-import { CookiesNames, getCookieItem, getSession, setSession } from "../../helpers/cookies";
+import { getSession } from "../../helpers/cookies";
 import * as Yup from 'yup';
 import { useFormik } from "formik";
 // import { snackon } from "../../reducers/slices/snackbar";
 import CustomInputField from "../../common/CustomInputField";
 import { UpdateProfile } from "../../reducers/slices/register";
 import { useDispatch } from "react-redux";
-import { snackon } from "../../reducers/slices/snackbar";
 
 function BasicInfo() {
     const { user } = getSession()
@@ -18,15 +17,7 @@ function BasicInfo() {
     const [initialSchema, setInitialSchema] = React.useState({})
     const handleSubmit = async () => {
         try {
-            const { payload } = await dispatch(UpdateProfile({ profile: register.values }))
-            if (payload) {
-                if (payload.result) {
-                    const accessToken = getCookieItem(CookiesNames.ACCESS_TOKEN)
-                    setSession({ accessToken, refreshToken: accessToken, data: payload.result })
-                    dispatch(snackon({ message: payload.message, color: 'success' }))
-                } else
-                    dispatch(snackon({ message: payload.message, color: 'error' }))
-            }
+            await dispatch(UpdateProfile({ profile: register.values }))
         } catch (e) {
             console.error(e)
         }

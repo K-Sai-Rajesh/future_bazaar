@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { config } from "../../helpers/config";
 import client from "../../helpers/client";
 import { loadoff, loadon } from "./loading";
+import { snackon } from "./snackbar";
 
 export const AddProduct = createAsyncThunk(
     "AddProduct",
@@ -11,8 +12,10 @@ export const AddProduct = createAsyncThunk(
             const headers = { "Content-Type": "multipart/form-data" }
             const url = `${config.BASE_API}/add_product`;
             const response = await client.post(url, param, headers);
+            dispatch(snackon({ message: response?.message, color: 'success' }))
             return response;
         } catch (error) {
+            dispatch(snackon({ message: error, color: 'error' }))
             return rejectWithValue(error);
         } finally {
             dispatch(loadoff(false));
@@ -28,8 +31,10 @@ export const EditProduct = createAsyncThunk(
             const headers = { "Content-Type": "multipart/form-data" }
             const url = `${config.BASE_API}/edit_product`;
             const response = await client.post(url, param, headers);
+            dispatch(snackon({ message: response.message, color: 'success   ' }))
             return response;
         } catch (error) {
+            dispatch(snackon({ message: "Server Error !", color: 'error ' }))
             return rejectWithValue(error);
         } finally {
             dispatch(loadoff(false));
@@ -55,10 +60,10 @@ export const GetProducts = createAsyncThunk(
 
 export const GetProductsBySellerId = createAsyncThunk(
     "GetProductsBySellerId",
-    async (param, { rejectWithValue, dispatch }) => {
+    async ({ id, sub }, { rejectWithValue, dispatch }) => {
         try {
             dispatch(loadon(true));
-            const url = `${config.BASE_API}/get_products/${param}`;
+            const url = `${config.BASE_API}/get_products/${id}/${sub}`;
             const response = await client.get(url);
             return response;
         } catch (error) {
@@ -163,12 +168,36 @@ export const GetSeller = createAsyncThunk(
     }
 );
 
+export const GetSellersProductById = createAsyncThunk(
+    "GetSellersProductById",
+    async ({ id, category }, { rejectWithValue, dispatch }) => {
+        try {
+            dispatch(loadon(true));
+            const url = `${config.BASE_API}/get_products/${id}/${category}`;
+            const response = await client.get(url);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error);
+        } finally {
+            dispatch(loadoff(false));
+        }
+    }
+)
+
 const sellerSlice = createSlice({
     name: "seller",
     initialState: {},
     reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(GetSellersProductById.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(GetSellersProductById.fulfilled, () => { })
+            .addCase(GetSellersProductById.rejected, (state) => {
+                state.loading = false;
+            })
+
             .addCase(GetProductsBySellerId.pending, (state) => {
                 state.loading = true;
             })

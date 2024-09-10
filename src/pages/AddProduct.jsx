@@ -44,8 +44,6 @@ export default function AddNewProduct() {
                 return
             }
 
-            console.log(register.values, state)
-
             const { payload } = await dispatch(
                 state === null ?
                     AddProduct({ ...register.values, files })
@@ -53,10 +51,9 @@ export default function AddNewProduct() {
                     EditProduct({ ...register.values, files })
             )
             if (payload?.message) {
-                dispatch(snackon(payload?.message))
                 navigate(-1)
             } else {
-                dispatch(snackon("Server Error !"))
+                dispatch(snackon({ message: "Server Error !", color: 'error ' }))
             }
         } catch (e) {
             console.error(e)
@@ -95,7 +92,6 @@ export default function AddNewProduct() {
         try {
             const { payload } = await dispatch(Category())
             if (payload) {
-                console.log(payload)
                 setCategories(prev => {
                     return {
                         ...prev,
@@ -103,9 +99,7 @@ export default function AddNewProduct() {
                     }
                 })
                 if (payload[0]) {
-                    console.log(payload[0].title)
                     register.setFieldValue('category', payload[0].title)
-                    // getSubCategories(payload[0].title)
                 }
             }
         } catch (e) {
@@ -177,9 +171,9 @@ export default function AddNewProduct() {
                 flexGrow={1}
                 rowGap={2}
                 justifyContent={'space-between'}
-                sx={{
-                    backgroundColor: '#F1F1F1'
-                }}
+            // sx={{
+            //     backgroundColor: '#F1F1F1'
+            // }}
             >
                 <Grid
                     item
@@ -228,6 +222,7 @@ export default function AddNewProduct() {
                     item
                     component={Paper}
                     elevation={0}
+                    sx={{ backgroundColor: '#F1F1F1' }}
                     display={'flex'}
                     justifyContent={'space-around'}
                     alignItems={'center'}
@@ -266,6 +261,7 @@ export default function AddNewProduct() {
                     item
                     component={Paper}
                     elevation={0}
+                    sx={{ backgroundColor: '#F1F1F1' }}
                     display={'flex'}
                     justifyContent={'space-around'}
                     alignItems={'center'}
@@ -305,6 +301,7 @@ export default function AddNewProduct() {
                     component={Paper}
                     elevation={0}
                     xs={12}
+                    sx={{ backgroundColor: '#F1F1F1' }}
                     lg={6.9}
                     p={2}
                 >
@@ -475,6 +472,7 @@ export default function AddNewProduct() {
                 <Grid
                     item
                     component={Paper}
+                    sx={{ backgroundColor: '#F1F1F1' }}
                     elevation={0}
                     xs={12}
                     lg={5}

@@ -1,46 +1,57 @@
-import { Avatar, Badge, Box, Card, CardContent, Chip, createTheme, Grid, IconButton, Paper, Stack, TextField, ThemeProvider, Typography } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { Avatar, Badge, Box, Card, CardActions, CardContent, CardHeader, Chip, createTheme, Grid, IconButton, ListItemIcon, MenuItem, Paper, Stack, ThemeProvider, Typography } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { GetProductsBySellerId, GetSeller } from "../reducers/slices/seller";
+import { GetProductsBySellerId, GetSeller, SubCategory } from "../reducers/slices/seller";
 import getBlogTheme from "./Landing/theme/getBlogTheme";
-import { KeyboardDoubleArrowRightOutlined } from "@mui/icons-material";
+import { CurrencyRupeeOutlined, FavoriteBorderOutlined, ShareLocationOutlined } from "@mui/icons-material";
 import { config } from "../helpers/config";
+import QRCode from "react-qr-code";
 
 export default function Seller() {
     const { id } = useParams()
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const blogTheme = createTheme(getBlogTheme('light'));
     const [user, setUser] = useState(null)
-    const [products, setProducts] = useState(null)
+    const [products, setProducts] = useState([])
+    const [subCategory, setSubCategory] = useState([])
+    const [allSelected, setAllSelected] = useState(true)
 
     async function getSeller() {
         try {
             const { payload } = await dispatch(GetSeller(id))
             if (payload.result) {
-                setUser(payload.result[0])
+                getSubCategories(payload?.result?.category)
+                setUser(payload.result)
             }
         } catch (e) {
             console.error(e)
         }
     }
 
-    async function getProductsBySellerID() {
+    async function getSubCategories(category) {
         try {
-            const { payload } = await dispatch(GetProductsBySellerId(id))
+            const { payload } = await dispatch(SubCategory(category))
+            if (payload)
+                setSubCategory(payload ? payload.map(item => ({ sub: item.subcategory, isSelected: false })) : [])
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
+    async function getProductsBySellerID(sub) {
+        try {
+            const { payload } = await dispatch(GetProductsBySellerId({ id, sub }))
             if (payload?.result) {
-                // const groupedObjects = payload?.result.reduce((result, obj) => {
-                //     (result[obj.category] = result[obj.category] || []).push(obj);
-                //     return result;
-                // }, {});
-                console.log(payload?.result)
-                // console.log(payload?.result?.map(item => {
-                //     return {
-                //         ...Object.values(item)[0][0],
-                //         pics: Object.values(item)[0].map(item => item.path)
-                //     }
-                // }))
-                // setProducts(payload?.result)
+                const segregated = Object.values(payload?.result)[0].reduce((result, obj) => {
+                    (result[obj.title] = result[obj.title] || []).push(obj);
+                    return result;
+                }, {})
+                setProducts(Object.keys(segregated).map(key => ({
+                    picList: segregated[key].map(product => product.path),
+                    ...segregated[key][0]
+                })))
             }
         } catch (e) {
             console.error(e)
@@ -50,17 +61,28 @@ export default function Seller() {
     useEffect(() => {
         try {
             getSeller();
-            getProductsBySellerID()
+            getProductsBySellerID('all')
         } catch (e) {
             console.error(e)
         }
         // eslint-disable-next-line
     }, [])
 
+    async function SelectStore(sub, key) {
+        let filteredStore = subCategory.map((filter, id) => {
+            if (id === key) return { ...filter, isSelected: true }
+            else return { ...filter, isSelected: false }
+        });
+        getProductsBySellerID(sub.sub)
+        setAllSelected(false)
+        setSubCategory(filteredStore)
+    }
+
     return (
         <ThemeProvider theme={blogTheme}>
             <Grid
                 container
+                justifyContent={'center'}
                 p={2}
                 rowGap={4}
             >
@@ -98,10 +120,158 @@ export default function Seller() {
                     display={'flex'}
                     rowGap={1}
                     flexDirection={'column'}
+                    justifyContent={'center'}
+                    alignItems={'center'}
                     p={1}
+                >
+                    <Card sx={{ width: '100%', height: '100%', border: 'none' }} elevation={0}>
+                        <CardContent>
+                            <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14, fontFamily: "Raleway" }}>
+                                {user === null ? "" : `${user.firstname} ${user.lastname}`}
+                            </Typography>
+                            <Typography variant="h5" component="div" fontFamily="Raleway">
+                                {user === null ? "" : user.shopName}
+                            </Typography>
+                            <Typography sx={{ color: 'text.secondary', mb: 1.5 }} fontFamily="Raleway">
+                                {user === null ? "" : user.shopPhoneNumber}
+                            </Typography>
+                        </CardContent>
+                        <CardContent
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                            }}
+                        >
+                            <Typography variant="h5" component="div" fontFamily="Raleway">
+                                Shop Timings
+                            </Typography>
+                            <IconButton
+                                onClick={() => navigate('/location', { state: { location: [user.latitude, user.longitude] } })}
+                            >
+                                <ShareLocationOutlined />
+                            </IconButton>
+                        </CardContent>
+                        <CardContent
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}
+                        >
+                            <Typography variant="h5" component="div" fontFamily="Raleway">
+                                {user === null ? "" : user.shopStartTime}
+                            </Typography>&emsp;&emsp;
+                            <Typography variant="h5" component="div" fontFamily="Raleway">
+                                {user === null ? "" : user.shopEndTime}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid
+                    item
+                    xs={12}
+                    display={'flex'}
+                    rowGap={1}
+                    flexDirection={'column'}
+                    // p={1}
                 >
                     <Stack
                         spacing={{ xs: 1, sm: 2 }}
+                        direction="row"
+                        useFlexGap
+                        sx={{
+                            flexWrap: 'no-wrap',
+                            alignItems: "center",
+                        }}
+                    >
+                        <Chip
+                            sx={{
+                                cursor: 'pointer'
+                            }}
+                            size="large"
+                            color='primary'
+                            variant="outlined"
+                            disabled
+                            label={
+                                <Typography
+                                    fontFamily={"Raleway"}
+                                    fontSize={'12px'}
+                                    fontWeight={'bold'}
+                                    overflow={'auto'}
+                                    textOverflow={'ellipsis'}
+                                    textTransform={'capitalize'}
+                                    color={"#222"}
+                                >
+                                    {user === null ? "" : user.category}
+                                </Typography>
+                            } />
+                    </Stack>
+                    <Stack
+                        spacing={{ xs: 1, sm: 2 }}
+                        direction="row"
+                        useFlexGap
+                        sx={{
+                            flexWrap: 'no-wrap',
+                            alignItems: "center",
+                        }}
+                    >
+                        <Chip
+                            sx={{
+                                cursor: 'pointer'
+                            }}
+                            onClick={() => {
+                                setAllSelected(true)
+                                getProductsBySellerID('all')
+                                setSubCategory(subCategory.map(sub => ({ ...sub, isSelected: false })))
+                            }}
+                            size="large"
+                            variant={allSelected ? "contained" : 'outlined'}
+                            color='primary'
+                            label={
+                                <Typography
+                                    fontFamily={"Raleway"}
+                                    fontSize={'12px'}
+                                    fontWeight={'bold'}
+                                    overflow={'auto'}
+                                    textOverflow={'ellipsis'}
+                                    textTransform={'capitalize'}
+                                >
+                                    all
+                                </Typography>
+                            } />
+                        {
+                            subCategory.map((sub, key) => (
+                                <Chip
+                                    key={key}
+                                    sx={{
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={() => SelectStore(sub, key)}
+                                    size="large"
+                                    variant={sub.isSelected ? "contained" : 'outlined'}
+                                    color='primary'
+                                    label={
+                                        <Typography
+                                            fontFamily={"Raleway"}
+                                            fontSize={'12px'}
+                                            fontWeight={'bold'}
+                                            overflow={'auto'}
+                                            textOverflow={'ellipsis'}
+                                            textTransform={'capitalize'}
+                                        >
+                                            {sub.sub}
+                                        </Typography>
+                                    } />
+                            ))
+                        }
+                    </Stack>
+                </Grid>
+                <Grid
+                    item
+                    xs={12}
+                >
+                    <Stack
+                        spacing={{ xs: 1 }}
                         direction="row"
                         useFlexGap
                         sx={{
@@ -110,146 +280,85 @@ export default function Seller() {
                         }}
                     >
                         {
-                            ['firstname', 'lastname', 'shopName', 'shopPhoneNumber', 'shopStartTime', 'shopEndTime'].map((head, idx) => (
+                            products.map((head, idx) => (
                                 <Box
-                                    sx={{ width: '250px' }}
+                                    sx={{ width: '160px' }}
+                                    display={'flex'}
+                                    justifyContent={'center'}
+                                    alignItems={'center'}
                                     key={idx}
                                 >
-
-                                    <TextField
-                                        id={`${head.label}-${idx}`}
-                                        hiddenLabel
-                                        size="small"
-                                        variant="outlined"
-                                        fullWidth
-                                        value={user === null ? "" : user[head]}
-                                        aria-label="Enter your email address"
-                                        placeholder="Your email address"
-                                        slotProps={{
-                                            htmlInput: {
-                                                autoComplete: 'off',
-                                                'aria-label': 'Enter your email address',
-                                            },
-                                        }}
-                                        sx={{ width: '250px', fontFamily: 'Raleway' }}
-                                    />
+                                    <Card sx={{ width: '100%' }}>
+                                        <CardHeader
+                                            title={head.title}
+                                            action={
+                                                <IconButton aria-label="add to favorites">
+                                                    <FavoriteBorderOutlined />
+                                                </IconButton>
+                                            }
+                                        /><br />
+                                        <img
+                                            src={`${config.BASE_URL}/${head.path}`}
+                                            style={{
+                                                width: '100%'
+                                            }}
+                                            alt="Paella dish"
+                                        />
+                                        <CardContent sx={{ py: 2 }}>
+                                            <Stack
+                                                spacing={{ xs: 1 }}
+                                                direction="row"
+                                                useFlexGap
+                                                sx={{
+                                                    flexWrap: 'wrap', justifyContent: "start",
+                                                    alignItems: "start"
+                                                }}
+                                            >
+                                                <MenuItem>
+                                                    <ListItemIcon>
+                                                        <CurrencyRupeeOutlined sx={{ fontSize: "15px" }} />
+                                                    </ListItemIcon>
+                                                    <Typography
+                                                        variant="body2"
+                                                        fontFamily={'Raleway'}
+                                                        fontWeight={'bold'}
+                                                        fontSize={13}
+                                                        sx={{
+                                                            color: 'text.secondary',
+                                                        }}
+                                                    >
+                                                        <span
+                                                            style={{
+                                                                textDecorationLine: 'line-through'
+                                                            }}
+                                                        >
+                                                            {
+                                                                head.mrp
+                                                            }
+                                                        </span>&ensp;
+                                                        {
+                                                            head.discountedPrice
+                                                        }
+                                                    </Typography>
+                                                </MenuItem>
+                                            </Stack>
+                                        </CardContent>
+                                        {/* <CardActions disableSpacing sx={{ display: 'flex', justifyContent: 'end' }}>
+                                            <QRCode
+                                                size={100}
+                                                style={{ height: "auto", maxWidth: 80, width: 80 }}
+                                                value={"https:mui.com"}
+                                                viewBox={`0 0 100 100`}
+                                                level="L"
+                                            />
+                                        </CardActions> */}
+                                    </Card>
                                 </Box>
                             ))
                         }
                     </Stack>
                 </Grid>
-                <Grid
-                    item
-                    xs={12}
-                    display={'flex'}
-                    rowGap={1}
-                    flexDirection={'column'}
-                    p={1}
-                >
-                    <Stack
-                        spacing={{ xs: 1, sm: 2 }}
-                        direction="row"
-                        useFlexGap
-                        sx={{
-                            flexWrap: 'wrap',
-                            justifyContent: 'end',
-                            alignItems: "center",
-                        }}
-                    >
-                        {
-                            products !== null && Object.keys(products).map((catergory, idx) => {
-                                return (
-                                    <Chip
-                                        key={idx}
-                                        sx={{
-                                            cursor: 'pointer'
-                                        }}
-                                        // onClick={() => navigate(`${link.link}`)}
-                                        size="large"
-                                        // variant={path === link.link ? "contained" : 'outlined'}  
-                                        color='primary'
-                                        label={
-                                            <Typography
-                                                fontFamily={"Raleway"}
-                                                fontSize={'12px'}
-                                                fontWeight={'bold'}
-                                                overflow={'auto'}
-                                                textOverflow={'ellipsis'}
-                                                textTransform={'capitalize'}
-                                            // color={path === link.link ? "#fff" : "#767676"}
-                                            >
-                                                {catergory}
-                                            </Typography>
-                                        } />
-                                )
-                            })
-                        }
-                    </Stack>
-                </Grid>
-                {
-                    products !== null &&
-                    Object.keys(products).map((key, idx) => {
-                        return (
-                            <Grid
-                                key={idx}
-                                item
-                                xs={12}
-                            >
-                                <Box
-                                    display={'flex'}
-                                    justifyContent={'space-between'}
-                                    alignItems={'center'}
-                                >
-                                    <Typography
-                                        fontFamily={"Raleway"}
-                                        fontSize={'15px'}
-                                        fontWeight={'bold'}
-                                        overflow={'auto'}
-                                        textOverflow={'ellipsis'}
-                                        textTransform={'capitalize'}
-                                    // color={path === link.link ? "#fff" : "#767676"}
-                                    >
-                                        {key}
-                                    </Typography>
-                                    <IconButton>
-                                        <KeyboardDoubleArrowRightOutlined />
-                                    </IconButton>
-                                </Box>
-                                <Stack
-                                    spacing={{ xs: 1, sm: 2 }}
-                                    direction="row"
-                                    useFlexGap
-                                    sx={{
-                                        flexWrap: 'wrap',
-                                        alignItems: "center",
-                                    }}
-                                >
-                                    {
-                                        products[key].map((product, idx) => (
-                                            <Card sx={{ maxWidth: 345 }} key={idx}>
-                                                <img
-                                                    style={{ height: 140 }}
-                                                    src={`${config.BASE_URL}/${product.path}`}
-                                                    alt={product.title}
-                                                />
-                                                <CardContent>
-                                                    <Typography gutterBottom variant="h5" component="div">
-                                                        {product.title}
-                                                    </Typography>
-                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                        Lizards are a widespread group of squamate reptiles, with over 6,000
-                                                        species, ranging across all continents except Antarctica
-                                                    </Typography>
-                                                </CardContent>
-                                            </Card>
-                                        ))
-                                    }
-                                </Stack>
-                            </Grid>
-                        )
-                    })
-                }
             </Grid>
-        </ThemeProvider>
+        </ThemeProvider >
     )
 }

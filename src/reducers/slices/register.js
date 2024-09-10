@@ -3,7 +3,7 @@ import { config } from "../../helpers/config";
 import client from "../../helpers/client";
 import { snackon } from "./snackbar";
 import { loadoff, loadon } from "./loading";
-import { clearSession } from "../../helpers/cookies";
+import { clearSession, CookiesNames, getCookieItem, setSession } from "../../helpers/cookies";
 
 export const Register = createAsyncThunk(
   "register",
@@ -12,6 +12,7 @@ export const Register = createAsyncThunk(
       dispatch(loadon(true));
       const url = `${config.BASE_API}/register`;
       const response = await client.post(url, params);
+      dispatch(snackon({ message: response?.message, color: 'success' }));
       return Promise.resolve(response?.message);
     } catch (error) {
       dispatch(snackon({ message: error, color: 'error' }));
@@ -32,6 +33,12 @@ export const UpdateProfile = createAsyncThunk(
       dispatch(loadon(true));
       const url = `${config.BASE_API}/update_profile`;
       const response = await client.post(url, profile);
+      console.log(response)
+      if (response.message === "Updated Successfully !") {
+        const accessToken = getCookieItem(CookiesNames.ACCESS_TOKEN)
+        setSession({ accessToken, refreshToken: accessToken, data: response.result })
+      }
+      dispatch(snackon({ message: response.message, color: 'success' }));
       return Promise.resolve(response);
     } catch (error) {
       dispatch(snackon({ message: error, color: 'error' }));
@@ -71,10 +78,13 @@ export const updateprofilepic = createAsyncThunk(
   async (params, { rejectWithValue, dispatch }) => {
     try {
       dispatch(loadon(true));
-      console.log(params)
       const headers = { "Content-Type": "multipart/form-data" }
       const url = `${config.BASE_API}/update_profile_picture`;
       const response = await client.post(url, params, headers);
+      if (response.message === "Profile Updation Successful !") {
+        const accessToken = getCookieItem(CookiesNames.ACCESS_TOKEN)
+        setSession({ accessToken, refreshToken: accessToken, data: { ...params.user, propic: response?.url } })
+      }
       dispatch(snackon({ message: response.message, color: 'success' }));
       return Promise.resolve(response);
     } catch (error) {

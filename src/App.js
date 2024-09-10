@@ -32,12 +32,6 @@ function App() {
         open={open}
         autoHideDuration={3000}
         onClose={handleClose}
-        // color={color}
-        // message={
-        //   <Typography fontSize="14px" fontFamily="Raleway" fontWeight="bold">
-        //     {message}
-        //   </Typography>
-        // }
       >
         <Alert
           onClose={handleClose}

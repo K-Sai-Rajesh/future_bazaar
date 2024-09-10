@@ -15,6 +15,7 @@ import Blog from "../pages/Landing/Landing";
 import BasicInfo from "../pages/profile/BasicInfo";
 import Security from "../pages/profile/Security";
 import NotFound from "../pages/NotFound";
+import SellerProducts from "../pages/SellerProducts";
 
 export const routes = [
   {
@@ -32,6 +33,10 @@ export const routes = [
       {
         path: "seller/:id",
         element: <Seller />,
+      },
+      {
+        path: "seller/:id/products",
+        element: <SellerProducts />,
       },
       {
         path: 'location',

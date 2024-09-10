@@ -9,118 +9,36 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import * as Yup from 'yup';
 import CustomInputField from '../common/CustomInputField';
-import { Fab, IconButton, InputAdornment, Paper } from '@mui/material';
+import { Fab, IconButton, InputAdornment, Paper, Stack } from '@mui/material';
 import { useFormik } from 'formik'
 import { MyLocationOutlined, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { Register } from '../reducers/slices/register';
 import { snackon } from '../reducers/slices/snackbar';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { formKeys } from '../helpers/features';
+import CustomSelectField from '../common/CustomSelectField';
+import { Category } from '../reducers/slices/seller';
 
 export default function SignUp() {
     const [show, setShow] = React.useState(false)
     const { state } = useLocation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const [categories, setCategories] = React.useState([])
     const handleSubmit = async () => {
         try {
             if (register?.values?.phone?.length < 10) {
                 snackon({ message: "Phone Number Cannot be less than 10 Digits !", color: 'warning' })
                 return
             }
-            const { payload } = await dispatch(Register(register?.values))
-            dispatch(snackon({ message: payload, color: 'success' }));
+            await dispatch(Register(register?.values))
         } catch (e) {
             console.error(e)
         }
     };
     // eslint-disable-next-line
-    const formKeys = [
-        {
-            id: "firstname",
-            label: "First Name (*)",
-            type: 'text',
-            colSize: 4
-        },
-        {
-            id: "lastname",
-            label: "Last Name (*)",
-            type: 'text',
-            colSize: 4
-        },
-        {
-            id: "email",
-            label: "Email Address (*)",
-            type: 'text',
-            colSize: 4
-        },
-        {
-            id: "shopName",
-            label: "Shop Name (*)",
-            type: 'text',
-            colSize: 4
-        },
-        {
-            id: "shopPhoneNumber",
-            label: "Shop Phone Number (*)",
-            type: 'number',
-            colSize: 4
-        },
-        {
-            id: "shopDescription",
-            label: "Shop Description (*)",
-            type: 'text',
-            colSize: 4
-        },
-        {
-            id: "shopStartTime",
-            label: "Shop Opening Time (*)",
-            type: 'time',
-            colSize: 4
-        },
-        {
-            id: "shopEndTime",
-            label: "Shop Closing Time (*)",
-            type: 'time',
-            colSize: 4
-        },
-        {
-            id: "gst",
-            label: "GST Number (optional)",
-            type: 'number',
-            colSize: 4
-        },
-        {
-            id: "phone",
-            label: "Phone Number (*)",
-            type: 'number',
-            colSize: 4
-        },
-        {
-            id: "password",
-            label: "Password (*)",
-            type: 'password',
-            colSize: 4
-        },
-        {
-            id: "latitude",
-            label: "Latitude (*)",
-            type: 'number',
-            colSize: 4
-        },
-        {
-            id: "longitude",
-            label: "Longitude (*)",
-            type: 'number',
-            colSize: 4
-        },
-        {
-            id: "error",
-            label: "Error (meters)",
-            type: 'number',
-            colSize: 4
-        },
-    ]
+
     const [initialValues, setInitialValues] = React.useState({})
     const [initialSchema, setInitialSchema] = React.useState({})
     const register = useFormik({
@@ -133,7 +51,6 @@ export default function SignUp() {
     function SetRegister() {
         let initial = {}
         let validateSchema = {}
-        console.log(state)
         // eslint-disable-next-line
         formKeys?.map(keys => {
             initial[keys?.id] = ""
@@ -145,8 +62,6 @@ export default function SignUp() {
                             Yup.number().required(`Please enter ${keys?.label} !`)
 
         })
-        // register.setFieldValue('latitude', state?.latitude)
-        // register.setFieldValue('longitude', state?.longitude)
         initial['latitude'] = state?.latitude
         initial['longitude'] = state?.longitude
         initial['error'] = state?.accuracy
@@ -155,8 +70,23 @@ export default function SignUp() {
         setInitialSchema(validateSchema)
     }
 
+    async function getCategories() {
+        try {
+            const { payload } = await dispatch(Category())
+            if (payload) {
+                setCategories(payload ? payload : [])
+                if (payload[0]) {
+                    register.setFieldValue('category', payload[0].title)
+                }
+            }
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
     React.useEffect(() => {
         SetRegister()
+        getCategories()
         // eslint-disable-next-line
     }, [])
 
@@ -234,65 +164,117 @@ export default function SignUp() {
                     </Typography>
                     <Box sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
-                            {
-                                formKeys?.map(key => {
-                                    return (
-                                        <Grid item xs={12} sm={key.colSize}>
-                                            <CustomInputField
-                                                autoComplete={key?.label}
-                                                name={key?.id}
-                                                required
-                                                fullWidth
-                                                id={key?.id}
-                                                label={key?.label}
-                                                type={key?.type === 'password' ? show ? "text" : key?.type : key?.type}
-                                                value={register?.values[key?.id]}
-                                                onChange={register.handleChange}
-                                                error={
-                                                    register.errors[key?.id] && register.touched[key?.id]
-                                                }
-                                                errormessage={
-                                                    register.errors[key?.id] && register.touched[key?.id]
-                                                        ? register.errors[key?.id]
-                                                        : ""
-                                                }
-                                                endAdornment={
-                                                    key.id === "password" &&
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            aria-label="toggle password visibility"
-                                                            onClick={() => setShow(!show)}
-                                                            edge="end"
-                                                        >
-                                                            {
-                                                                show ?
-                                                                    <VisibilityOff /> :
-                                                                    <Visibility />
-                                                            }
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                }
-                                                onInput={(e) => {
+                            <Grid item xs={12}>
+                                <Stack
+                                    spacing={{ xs: 1, sm: 2 }}
+                                    direction="row"
+                                    useFlexGap
+                                    sx={{
+                                        flexWrap: 'wrap', justifyContent: "center",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    {
+                                        formKeys?.map((key, idx) => {
+                                            // if (key.isList)
+                                            //     return
+                                            return (
+                                                <Box
+                                                    sx={{ width: '250px' }}
+                                                    id={key?.id}
+                                                    key={idx}
+                                                >
+                                                    {
+                                                        key.isList ?
+                                                            <CustomSelectField
+                                                                id="category"
+                                                                name="category"
+                                                                label={"Categories"}
+                                                                variant="outlined"
+                                                                type={"text"}
+                                                                value={register.values.category}
+                                                                onChange={register.handleChange}
+                                                                onBlur={register.handleBlur}
+                                                                fullWidth
+                                                                sx={{
+                                                                    fontFamily: 'Raleway',
+                                                                    fontWeight: 'bold !important',
+                                                                    color: '#707070',
+                                                                    fontSize: '14px'
+                                                                }}
+                                                                error={
+                                                                    register.errors.category && register.touched.category
+                                                                }
+                                                                errormessage={
+                                                                    register.errors.category && register.touched.category
+                                                                        ? register.errors.category
+                                                                        : ""
+                                                                }
+                                                            >
+                                                                <option value={""}>Select</option>
+                                                                {categories?.map((option, idx) => {
+                                                                    return <option key={idx} value={option.title}>{option.title}</option>
+                                                                })}
+                                                            </CustomSelectField>
+                                                            :
+                                                            <CustomInputField
+                                                                autoComplete={key?.label}
+                                                                name={key?.id}
+                                                                required
+                                                                fullWidth
+                                                                id={key?.id}
+                                                                label={key?.label}
+                                                                type={key?.type === 'password' ? show ? "text" : key?.type : key?.type}
+                                                                value={register?.values[key?.id]}
+                                                                onChange={register.handleChange}
+                                                                error={
+                                                                    register.errors[key?.id] && register.touched[key?.id]
+                                                                }
+                                                                errormessage={
+                                                                    register.errors[key?.id] && register.touched[key?.id]
+                                                                        ? register.errors[key?.id]
+                                                                        : ""
+                                                                }
+                                                                endAdornment={
+                                                                    key.id === "password" &&
+                                                                    <InputAdornment position="end">
+                                                                        <IconButton
+                                                                            aria-label="toggle password visibility"
+                                                                            onClick={() => setShow(!show)}
+                                                                            edge="end"
+                                                                        >
+                                                                            {
+                                                                                show ?
+                                                                                    <VisibilityOff /> :
+                                                                                    <Visibility />
+                                                                            }
+                                                                        </IconButton>
+                                                                    </InputAdornment>
+                                                                }
+                                                                onInput={(e) => {
 
-                                                    if (key?.id === "phone" || key?.id === "shopPhoneNumber") {
-                                                        if (e.target.value?.length > 10)
-                                                            e.target.value = register?.values[key?.id]
-                                                        else if (e.target.value?.length > 10)
-                                                            register.setErrors(key?.id, "Cannot be less than 10 digits !")
+                                                                    if (key?.id === "phone" || key?.id === "shopPhoneNumber") {
+                                                                        if (e.target.value?.length > 10)
+                                                                            e.target.value = register?.values[key?.id]
+                                                                        else if (e.target.value?.length > 10)
+                                                                            register.setErrors(key?.id, "Cannot be less than 10 digits !")
 
+                                                                    }
+                                                                }}
+                                                                autoFocus
+                                                                size='small'
+                                                                sx={{
+                                                                    fontFamily: 'Raleway',
+                                                                    fontWeight: 'bold !important'
+                                                                }}
+                                                            />
                                                     }
-                                                }}
-                                                autoFocus
-                                                size='small'
-                                                sx={{
-                                                    fontFamily: 'Raleway',
-                                                    fontWeight: 'bold !important'
-                                                }}
-                                            />
-                                        </Grid>
-                                    )
-                                })
-                            }
+                                                </Box>
+                                            )
+                                        })
+                                    }
+                                </Stack>
+                            </Grid>
                         </Grid>
                         <Grid container justifyContent="flex-end">
                             <Grid item xs={12} sm={6} display={'flex'} justifyContent={'space-between'} alignItems={'center'}>

@@ -9,7 +9,6 @@ import { WhatsApp } from "@mui/icons-material";
 import Copyright from "./CopyRight";
 
 function Item({ path }) {
-    console.log(path)
     return (
         <Paper elevation={0} sx={{ p: 2 }}>
             <img
@@ -72,7 +71,6 @@ export default function Product() {
             obj['latitude'] = payload.location.latitude
             obj['error'] = payload.location.error
 
-            console.log(obj)
             setFiles({
                 ...obj,
                 images: paths

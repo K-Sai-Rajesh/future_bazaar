@@ -228,7 +228,6 @@ export default function ProductCard({ title, description, mrp, price, shop, cate
                             fontWeight: 'bold',
                             fontSize: 14
                         }}
-                    // sx={{ color: 'text.secondary' }}
                     >
                         {
                             description

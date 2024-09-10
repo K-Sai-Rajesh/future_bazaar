@@ -6,8 +6,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateprofilepic } from "../../reducers/slices/register";
 import { useState } from "react";
-import { CookiesNames, getCookieItem, getSession, setSession } from "../../helpers/cookies";
-import { snackon } from "../../reducers/slices/snackbar";
+import { getSession } from "../../helpers/cookies";
 
 export default function Profile() {
   const { user } = getSession()
@@ -31,12 +30,9 @@ export default function Profile() {
   async function handleProPicChange(e) {
     try {
       const { files } = e.target;
-      const { payload } = await dispatch(updateprofilepic({ propic: files[0] }))
+      const { payload } = await dispatch(updateprofilepic({ propic: files[0], user }))
       if (payload.url) {
         setPropic(`http://localhost:8080/${payload.url}`)
-        const accessToken = getCookieItem(CookiesNames.ACCESS_TOKEN)
-        setSession({ accessToken, refreshToken: accessToken, data: { ...user, propic: payload.url } })
-        dispatch(snackon({ message: payload.message, color: 'success' }))
       }
     } catch (e) {
       console.error(e)

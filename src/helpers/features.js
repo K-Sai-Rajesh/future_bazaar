@@ -154,6 +154,113 @@ export const securityHeaders = [
   },
 ]
 
+export const formKeys = [
+  {
+      id: "firstname",
+      label: "First Name (*)",
+      type: 'text',
+      colSize: 4,
+      isList: false
+  },
+  {
+      id: "lastname",
+      label: "Last Name (*)",
+      type: 'text',
+      colSize: 4,
+      isList: false
+  },
+  {
+      id: "email",
+      label: "Email Address (*)",
+      type: 'text',
+      isList: false,
+      colSize: 4,
+  },
+  {
+      id: "shopName",
+      label: "Shop Name (*)",
+      type: 'text',
+      isList: false,
+      colSize: 4
+  },
+  {
+      id: "shopPhoneNumber",
+      label: "Shop Phone Number (*)",
+      type: 'number',
+      isList: false,
+      colSize: 4
+  },
+  {
+      id: "shopDescription",
+      label: "Shop Description (*)",
+      type: 'text',
+      isList: false,
+      colSize: 4
+  },
+  {
+      id: "shopStartTime",
+      label: "Shop Opening Time (*)",
+      type: 'time',
+      isList: false,
+      colSize: 4
+  },
+  {
+      id: "shopEndTime",
+      label: "Shop Closing Time (*)",
+      type: 'time',
+      isList: false,
+      colSize: 4
+  },
+  {
+      id: "category",
+      label: "Category (*)",
+      type: 'text',
+      isList: true,
+      colSize: 4
+  },
+  {
+      id: "gst",
+      label: "GST Number (optional)",
+      type: 'number',
+      isList: false,
+      colSize: 4
+  },
+  {
+      id: "phone",
+      label: "Phone Number (*)",
+      type: 'number',
+      isList: false,
+      colSize: 4
+  },
+  {
+      id: "password",
+      label: "Password (*)",
+      type: 'password',
+      isList: false,
+      colSize: 4
+  },
+  {
+      id: "latitude",
+      label: "Latitude (*)",
+      type: 'number',
+      isList: false,
+      colSize: 4
+  },
+  {
+      id: "longitude",
+      label: "Longitude (*)",
+      type: 'number',
+      isList: false,
+      colSize: 4
+  },
+  {
+      id: "error",
+      label: "Error (meters)",
+      type: 'number',
+      isList: false,
+      colSize: 4
+  },
+]
 
 export const links = [
   {

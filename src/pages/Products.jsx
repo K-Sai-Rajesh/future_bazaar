@@ -91,9 +91,9 @@ export default function Products() {
             flexGrow={1}
             rowGap={2}
             justifyContent={'space-between'}
-            sx={{
-                backgroundColor: '#F1F1F1'
-            }}
+            // sx={{
+            //     backgroundColor: '#F1F1F1'
+            // }}
         >
             <Grid
                 item

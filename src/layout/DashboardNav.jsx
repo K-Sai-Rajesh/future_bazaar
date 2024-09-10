@@ -9,11 +9,12 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import logo from "../assets/images/futurebazaar.png";
+import logo from "../assets/images/future_bazaar.png";
 import { MoreVertOutlined } from "@mui/icons-material";
 import { NavLink } from "react-router-dom";
 import { CookiesNames, clearSession, getCookieItem, getSession } from "../helpers/cookies";
 import { links, stringAvatar } from "../helpers/features";
+import SitemarkIcon from "../pages/Landing/components/SitemarkIcon";
 
 function DashboardNav() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -39,16 +40,14 @@ function DashboardNav() {
           zIndex: 100,
         }}
       >
-        <Grid item xs={12} component={Paper} elevation={3} px={2} py={1}>
+        <Grid item xs={12} component={Paper} elevation={2} px={2} py={1}>
           <Grid
             container
             justifyContent={"space-between"}
             alignItems={"center"}
           >
             <Grid item xs={6} sm={4} lg={3}>
-              <IconButton>
-                <Avatar alt="Remy Sharp" src={logo} />
-              </IconButton>
+              <SitemarkIcon />
             </Grid>
             <Grid
               item

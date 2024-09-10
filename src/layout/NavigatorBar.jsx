@@ -15,9 +15,9 @@ export default function FixedBottomNavigation() {
     const navigate = useNavigate()
     const pathVariable = [
         {
-            link: 'dashboard',
-            title: 'dashboard',
-            sub: ['dashboard'],
+            link: 'admin',
+            title: 'admin',
+            sub: ['admin'],
             icon: <DashboardOutlined />,
             access: ['admin']
         },
@@ -42,8 +42,9 @@ export default function FixedBottomNavigation() {
             icon: <ShieldMoonOutlined />,
             access: ['admin', 'seller']
         },
-    ]
+    ].filter(link => link.access.includes(user.role))
     const path = pathname.split('/')[pathname.split('/').length - 1]
+    // console.log(path, pathVariable.map(item => item.title).indexOf(path))
     const [value, setValue] = React.useState(pathVariable.map(item => item.title).indexOf(path));
     const ref = React.useRef(null);
 
@@ -64,11 +65,12 @@ export default function FixedBottomNavigation() {
                     onChange={(event, newValue) => {
                         const path = pathVariable[newValue].link
                         setValue(newValue);
-                        navigate(path === 'dashboard' ? "" : path)
+                        console.log(newValue, path)
+                        navigate(path === 'auth' ? "" : path)
                     }}
                 >
                     {
-                        pathVariable.filter(link => link.access.includes(user.role)).map((path, idx) => {
+                        pathVariable.map((path, idx) => {
                             return (
                                 <BottomNavigationAction
                                     key={idx}
