@@ -9,14 +9,14 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import * as Yup from 'yup';
 import CustomInputField from '../common/CustomInputField';
-import { Fab, IconButton, InputAdornment, Paper, Stack } from '@mui/material';
+import { Chip, Fab, IconButton, InputAdornment, InputLabel, Paper, Stack } from '@mui/material';
 import { useFormik } from 'formik'
 import { MyLocationOutlined, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { Register } from '../reducers/slices/register';
 import { snackon } from '../reducers/slices/snackbar';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { formKeys } from '../helpers/features';
+import { customerKeys, formKeys } from '../helpers/features';
 import CustomSelectField from '../common/CustomSelectField';
 import { Category } from '../reducers/slices/seller';
 
@@ -26,13 +26,14 @@ export default function SignUp() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [categories, setCategories] = React.useState([])
+    const [seller, setSeller] = React.useState(false)
     const handleSubmit = async () => {
         try {
             if (register?.values?.phone?.length < 10) {
                 snackon({ message: "Phone Number Cannot be less than 10 Digits !", color: 'warning' })
                 return
             }
-            await dispatch(Register(register?.values))
+            await dispatch(Register({ ...register?.values, role: seller ? 'seller' : 'customer' }))
         } catch (e) {
             console.error(e)
         }
@@ -48,19 +49,13 @@ export default function SignUp() {
         validationSchema: Yup.object().shape(initialSchema),
     })
 
-    function SetRegister() {
+    function SetRegister(formKeys) {
         let initial = {}
         let validateSchema = {}
         // eslint-disable-next-line
-        formKeys?.map(keys => {
+        formKeys?.forEach(keys => {
             initial[keys?.id] = ""
-            validateSchema[keys?.id] =
-                keys.id === "gst" ? "" :
-                    (keys?.type === "text" || keys?.type === "password") ?
-                        Yup.string().required(`Please enter ${keys.label} !`) :
-                        keys?.type === "time" ? Yup.string().required(`Please enter ${keys.label} !`) :
-                            Yup.number().required(`Please enter ${keys?.label} !`)
-
+            validateSchema[keys?.id] = keys.id === "gst" ? "" : keys.error
         })
         initial['latitude'] = state?.latitude
         initial['longitude'] = state?.longitude
@@ -85,7 +80,7 @@ export default function SignUp() {
     }
 
     React.useEffect(() => {
-        SetRegister()
+        SetRegister(seller ? formKeys : customerKeys)
         getCategories()
         // eslint-disable-next-line
     }, [])
@@ -151,17 +146,82 @@ export default function SignUp() {
                         p: 2
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
-                    </Avatar>
-                    <Typography
-                        component="h1"
-                        variant="h5"
-                        fontFamily={'Raleway'}
-                        fontWeight={'bold'}
+                    <Stack
+                        direction={{ xs: 'column' }}
+                        width={'100%'}
+                        rowGap={0.5}
+                        columnGap={3}
+                        sx={{
+                            whiteSpace: "normal",
+                            flexWrap: 'wrap',
+                            overflow: 'auto',
+                            py: `0px !important`,
+                        }}
                     >
-                        Register
-                    </Typography>
+                        <Box
+                            display={'flex'}
+                            flexDirection={'column'}
+                            justifyContent={'center'}
+                            alignItems={'center'}
+                            alignSelf={'center'}
+                        >
+                            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                                <LockOutlinedIcon />
+                            </Avatar>
+                            <Typography
+                                component="h1"
+                                variant="h5"
+                                fontFamily={'Raleway'}
+                                fontWeight={'bold'}
+                            >
+                                Register
+                            </Typography>
+                        </Box>
+                        <Box
+                            display={'flex'}
+                            justifyContent={'space-between'}
+                            alignItems={'center'}
+                            width={'100%'}
+                        >
+                            <InputLabel
+                                htmlFor={"idx"}
+                                sx={{ fontFamily: "Raleway", fontWeight: "Bold" }}
+                            >
+                                <Typography
+                                    fontFamily={"Raleway"}
+                                    fontSize={'15px'}
+                                    fontWeight={'bold'}
+                                    overflow={'auto'}
+                                    textOverflow={'ellipsis'}
+                                    textTransform={'capitalize'}
+                                    // color={'error'}
+                                >
+                                    {
+
+                                        seller ? 'seller' : 'customer'
+                                    }
+                                </Typography>
+                            </InputLabel>
+                            <Chip
+                                sx={{ cursor: 'pointer' }}
+                                variant={'outlined'}
+                                size='large'
+                                onClick={() => { setSeller(!seller); SetRegister(seller ? customerKeys : formKeys) }}
+                                color={'primary'}
+                                label={
+                                    <Typography
+                                        fontFamily={"Raleway"}
+                                        fontSize={'12px'}
+                                        fontWeight={'bold'}
+                                        overflow={'auto'}
+                                        textOverflow={'ellipsis'}
+                                        textTransform={'capitalize'}
+                                    >
+                                        {seller ? "register as customer" : "register as seller"}
+                                    </Typography>
+                                } />
+                        </Box>
+                    </Stack>
                     <Box sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -175,9 +235,7 @@ export default function SignUp() {
                                     }}
                                 >
                                     {
-                                        formKeys?.map((key, idx) => {
-                                            // if (key.isList)
-                                            //     return
+                                        (seller ? formKeys : customerKeys)?.map((key, idx) => {
                                             return (
                                                 <Box
                                                     sx={{ width: '250px' }}
@@ -225,7 +283,7 @@ export default function SignUp() {
                                                                 id={key?.id}
                                                                 label={key?.label}
                                                                 type={key?.type === 'password' ? show ? "text" : key?.type : key?.type}
-                                                                value={register?.values[key?.id]}
+                                                                value={register?.values[key?.id] ? register?.values[key?.id] : ''}
                                                                 onChange={register.handleChange}
                                                                 error={
                                                                     register.errors[key?.id] && register.touched[key?.id]

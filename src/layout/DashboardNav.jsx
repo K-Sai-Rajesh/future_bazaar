@@ -9,7 +9,7 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import logo from "../assets/images/future_bazaar.png";
+// import logo from "../assets/images/future_bazaar.png";
 import { MoreVertOutlined } from "@mui/icons-material";
 import { NavLink } from "react-router-dom";
 import { CookiesNames, clearSession, getCookieItem, getSession } from "../helpers/cookies";

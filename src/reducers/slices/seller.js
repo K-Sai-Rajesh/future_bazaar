@@ -58,6 +58,38 @@ export const GetProducts = createAsyncThunk(
     }
 );
 
+export const GetSellers = createAsyncThunk(
+    "GetSellers",
+    async (param, { rejectWithValue, dispatch }) => {
+        try {
+            dispatch(loadon(true));
+            const url = `${config.BASE_API}/get_sellers`;
+            const response = await client.get(url);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error);
+        } finally {
+            dispatch(loadoff(false));
+        }
+    }
+);
+
+export const GetMainProducts = createAsyncThunk(
+    "GetMainProducts",
+    async (param, { rejectWithValue, dispatch }) => {
+        try {
+            dispatch(loadon(true));
+            const url = `${config.BASE_API}/products`;
+            const response = await client.get(url);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error);
+        } finally {
+            dispatch(loadoff(false));
+        }
+    }
+);
+
 export const GetProductsBySellerId = createAsyncThunk(
     "GetProductsBySellerId",
     async ({ id, sub }, { rejectWithValue, dispatch }) => {
@@ -190,6 +222,22 @@ const sellerSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(GetMainProducts.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(GetMainProducts.fulfilled, () => { })
+            .addCase(GetMainProducts.rejected, (state) => {
+                state.loading = false;
+            })
+
+            .addCase(GetSellers.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(GetSellers.fulfilled, () => { })
+            .addCase(GetSellers.rejected, (state) => {
+                state.loading = false;
+            })
+
             .addCase(GetSellersProductById.pending, (state) => {
                 state.loading = true;
             })

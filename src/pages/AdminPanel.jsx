@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { RegisterData, SellerStatusUpdate } from "../reducers/slices/admin";
 import { useEffect, useState } from "react";
@@ -91,7 +91,6 @@ export default function AdminPanel() {
     async function acceptSeller(data) {
         try {
             const { payload } = await dispatch(SellerStatusUpdate({ ...data, status: "Approved" }))
-            console.log(payload)
             Admin()
         } catch (e) {
             console.error(e)
@@ -105,53 +104,47 @@ export default function AdminPanel() {
                 columnSpacing={2}
                 justifyContent={'center'}
                 rowGap={2}
-                maxWidth={'lg'}
+                maxWidth={'xl'}
                 p={1}
-                sx={{
-                    backgroundColor: '#F1F1F1'
-                }}
             >
                 <Grid
                     item
                     xs={12}
-                    sm={4}
-                    lg={3}
                 >
-                    <ReviewCard
-                        count={list?.filter(seller => seller?.status === 'Approved')?.length}
-                        title={"Approved"}
-                        elevation={status === "Approved" ? 5 : 0}
-                        setStatus={setStatus}
-                        icon={<CheckBoxIcon color={status === "Approved" ? 'info' : ""} sx={{ fontSize: '40px', color: status === "Approved" ? "" : '#9A9A9A' }} />}
-                    />
-                </Grid>
-                <Grid
-                    item
-                    xs={12}
-                    sm={4}
-                    lg={3}
-                >
-                    <ReviewCard
-                        count={list?.filter(seller => seller?.status === 'Pending')?.length}
-                        title={"Pending"}
-                        elevation={status === "Pending" ? 5 : 0}
-                        setStatus={setStatus}
-                        icon={<PendingActionsIcon color={status === "Pending" ? 'warning' : ""} sx={{ fontSize: '40px', color: status === "Pending" ? "" : "#9A9A9A" }} />}
-                    />
-                </Grid>
-                <Grid
-                    item
-                    xs={12}
-                    sm={4}
-                    lg={3}
-                >
-                    <ReviewCard
-                        count={list?.filter(seller => seller?.status === 'Rejected')?.length}
-                        title={"Rejected"}
-                        elevation={status === "Rejected" ? 5 : 0}
-                        setStatus={setStatus}
-                        icon={<DoNotDisturbAltOutlined color={status === "Rejected" ? 'error' : ""} sx={{ fontSize: '40px', color: status === "Rejected" ? "" : "#9A9A9A" }} />}
-                    />
+                    <Stack
+                        direction={{ xs: 'row' }}
+                        columnGap={2}
+                        rowGap={1}
+                        sx={{
+                            whiteSpace: "normal",
+                            flexWrap: 'wrap',
+                            overflow: 'auto',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            p: 2
+                        }}>
+                        <ReviewCard
+                            count={list?.filter(seller => seller?.status === 'Approved')?.length}
+                            title={"Approved"}
+                            elevation={status === "Approved" ? 5 : 0}
+                            setStatus={setStatus}
+                            icon={<CheckBoxIcon color={status === "Approved" ? 'info' : ""} sx={{ fontSize: '40px', color: status === "Approved" ? "" : '#9A9A9A' }} />}
+                        />
+                        <ReviewCard
+                            count={list?.filter(seller => seller?.status === 'Pending')?.length}
+                            title={"Pending"}
+                            elevation={status === "Pending" ? 5 : 0}
+                            setStatus={setStatus}
+                            icon={<PendingActionsIcon color={status === "Pending" ? 'warning' : ""} sx={{ fontSize: '40px', color: status === "Pending" ? "" : "#9A9A9A" }} />}
+                        />
+                        <ReviewCard
+                            count={list?.filter(seller => seller?.status === 'Rejected')?.length}
+                            title={"Rejected"}
+                            elevation={status === "Rejected" ? 5 : 0}
+                            setStatus={setStatus}
+                            icon={<DoNotDisturbAltOutlined color={status === "Rejected" ? 'error' : ""} sx={{ fontSize: '40px', color: status === "Rejected" ? "" : "#9A9A9A" }} />}
+                        />
+                    </Stack>
                 </Grid>
                 <Grid
                     item

@@ -1,5 +1,5 @@
 import { Box, Chip, InputLabel, Stack, Typography } from "@mui/material";
-import { profileHeaders } from "../../helpers/features";
+import { customerProfileHeaders, profileHeaders } from "../../helpers/features";
 import React, { useState } from "react";
 import { getSession } from "../../helpers/cookies";
 import * as Yup from 'yup';
@@ -33,8 +33,9 @@ function BasicInfo() {
     function SetRegister(user) {
         let initial = {}
         let validateSchema = {}
+        let header = user?.role === 'seller' ? profileHeaders : customerProfileHeaders
         // eslint-disable-next-line
-        profileHeaders?.map(keys => {
+        header?.map(keys => {
             initial[keys?.name] = user[keys.name]
             validateSchema[keys?.name] =
                 keys.name === "gst" ? "" :
@@ -96,7 +97,7 @@ function BasicInfo() {
                 }}
             >
                 {
-                    profileHeaders.map((head, idx) => (
+                    (user?.role === 'customer' ? customerProfileHeaders : profileHeaders).map((head, idx) => (
                         <Box
                             sx={{ width: '250px' }}
                             key={idx}

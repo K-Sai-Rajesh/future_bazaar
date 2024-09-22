@@ -9,7 +9,8 @@ export default function ReviewCard({ count, title, icon, elevation, setStatus })
         <Card
             elevation={elevation}
             sx={{
-                cursor: 'pointer'
+                cursor: 'pointer',
+                backgroundColor: '#F1F1F1'
             }}
             onClick={() => setStatus(title)}
         >

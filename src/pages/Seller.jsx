@@ -1,4 +1,4 @@
-import { Avatar, Badge, Box, Card, CardActions, CardContent, CardHeader, Chip, createTheme, Grid, IconButton, ListItemIcon, MenuItem, Paper, Stack, ThemeProvider, Typography } from "@mui/material";
+import { Avatar, Badge, Box, Card, CardContent, CardHeader, Chip, createTheme, Grid, IconButton, ListItemIcon, MenuItem, Paper, Stack, ThemeProvider, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -6,7 +6,6 @@ import { GetProductsBySellerId, GetSeller, SubCategory } from "../reducers/slice
 import getBlogTheme from "./Landing/theme/getBlogTheme";
 import { CurrencyRupeeOutlined, FavoriteBorderOutlined, ShareLocationOutlined } from "@mui/icons-material";
 import { config } from "../helpers/config";
-import QRCode from "react-qr-code";
 
 export default function Seller() {
     const { id } = useParams()

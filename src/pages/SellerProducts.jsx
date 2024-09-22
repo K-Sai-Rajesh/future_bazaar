@@ -246,7 +246,6 @@ export default function SellerProducts() {
                                                 fontWeight: 'bold',
                                                 fontSize: 14
                                             }}
-                                        // sx={{ color: 'text.secondary' }}
                                         >
                                             {
                                                 product.description

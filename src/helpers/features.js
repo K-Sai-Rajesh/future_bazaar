@@ -1,3 +1,5 @@
+import * as Yup from 'yup';
+
 export const features = {
   font_Family: [
     "Nunito",
@@ -133,6 +135,34 @@ export const profileHeaders = [
   }
 ]
 
+
+export const customerProfileHeaders = [
+  {
+    name: 'firstname',
+    label: 'First Name',
+    type: 'text',
+    disable: false
+  },
+  {
+    name: 'lastname',
+    label: 'Last Name',
+    type: 'text',
+    disable: false
+  },
+  {
+    name: 'phone',
+    label: 'Phone Number',
+    type: 'number',
+    disable: false
+  },
+  {
+    name: 'email',
+    label: 'Email',
+    type: 'text',
+    disable: true
+  }
+]
+
 export const securityHeaders = [
   {
     name: 'oldpassword',
@@ -156,109 +186,191 @@ export const securityHeaders = [
 
 export const formKeys = [
   {
-      id: "firstname",
-      label: "First Name (*)",
-      type: 'text',
-      colSize: 4,
-      isList: false
+    id: "firstname",
+    label: "First Name (*)",
+    type: 'text',
+    colSize: 4,
+    isList: false,
+    error: Yup.string().required(`Please enter First Name !`)
   },
   {
-      id: "lastname",
-      label: "Last Name (*)",
-      type: 'text',
-      colSize: 4,
-      isList: false
+    id: "lastname",
+    label: "Last Name (*)",
+    type: 'text',
+    colSize: 4,
+    isList: false,
+    error: Yup.string().required(`Please enter Last Name !`)
+
   },
   {
-      id: "email",
-      label: "Email Address (*)",
-      type: 'text',
-      isList: false,
-      colSize: 4,
+    id: "email",
+    label: "Email Address (*)",
+    type: 'text',
+    isList: false,
+    colSize: 4,
+    error: Yup.string().required(`Please enter Email !`)
   },
   {
-      id: "shopName",
-      label: "Shop Name (*)",
-      type: 'text',
-      isList: false,
-      colSize: 4
+    id: "shopName",
+    label: "Shop Name (*)",
+    type: 'text',
+    isList: false,
+    colSize: 4,
+    error: Yup.string().required(`Please enter shop  name !`)
+
   },
   {
-      id: "shopPhoneNumber",
-      label: "Shop Phone Number (*)",
-      type: 'number',
-      isList: false,
-      colSize: 4
+    id: "shopPhoneNumber",
+    label: "Shop Phone Number (*)",
+    type: 'number',
+    isList: false,
+    colSize: 4,
+    error: Yup.number().required(`Please enter Shop number !`)
   },
   {
-      id: "shopDescription",
-      label: "Shop Description (*)",
-      type: 'text',
-      isList: false,
-      colSize: 4
+    id: "shopDescription",
+    label: "Shop Description (*)",
+    type: 'text',
+    isList: false,
+    colSize: 4,
+    error: Yup.string().required(`Please enter shop description !`)
   },
   {
-      id: "shopStartTime",
-      label: "Shop Opening Time (*)",
-      type: 'time',
-      isList: false,
-      colSize: 4
+    id: "shopStartTime",
+    label: "Shop Opening Time (*)",
+    type: 'time',
+    isList: false,
+    colSize: 4,
+    error: Yup.string().required(`Please enter shop start time !`)
   },
   {
-      id: "shopEndTime",
-      label: "Shop Closing Time (*)",
-      type: 'time',
-      isList: false,
-      colSize: 4
+    id: "shopEndTime",
+    label: "Shop Closing Time (*)",
+    type: 'time',
+    isList: false,
+    colSize: 4,
+    error: Yup.string().required(`Please enter shop end time !`)
   },
   {
-      id: "category",
-      label: "Category (*)",
-      type: 'text',
-      isList: true,
-      colSize: 4
+    id: "category",
+    label: "Category (*)",
+    type: 'text',
+    isList: true,
+    colSize: 4,
+    error: Yup.string().required(`Select a category !`)
   },
   {
-      id: "gst",
-      label: "GST Number (optional)",
-      type: 'number',
-      isList: false,
-      colSize: 4
+    id: "gst",
+    label: "GST Number (optional)",
+    type: 'number',
+    isList: false,
+    colSize: 4
   },
   {
-      id: "phone",
-      label: "Phone Number (*)",
-      type: 'number',
-      isList: false,
-      colSize: 4
+    id: "phone",
+    label: "Phone Number (*)",
+    type: 'number',
+    isList: false,
+    colSize: 4,
+    error: Yup.number().required(`Please enter phone number!`)
   },
   {
-      id: "password",
-      label: "Password (*)",
-      type: 'password',
-      isList: false,
-      colSize: 4
+    id: "password",
+    label: "Password (*)",
+    type: 'password',
+    isList: false,
+    colSize: 4,
+    error: Yup.string().required(`Please enter password !`)
   },
   {
-      id: "latitude",
-      label: "Latitude (*)",
-      type: 'number',
-      isList: false,
-      colSize: 4
+    id: "latitude",
+    label: "Latitude (*)",
+    type: 'number',
+    isList: false,
+    colSize: 4,
+    error: Yup.number().required(`Please enter latitute !`)
+
   },
   {
-      id: "longitude",
-      label: "Longitude (*)",
-      type: 'number',
-      isList: false,
-      colSize: 4
+    id: "longitude",
+    label: "Longitude (*)",
+    type: 'number',
+    isList: false,
+    colSize: 4,
+    error: Yup.string().required(`Please enter longitude !`)
   },
   {
-      id: "error",
-      label: "Error (meters)",
-      type: 'number',
-      isList: false,
-      colSize: 4
+    id: "error",
+    label: "Error (meters)",
+    type: 'number',
+    isList: false,
+    colSize: 4
+  },
+]
+
+export const customerKeys = [
+  {
+    id: "firstname",
+    label: "First Name (*)",
+    type: 'text',
+    colSize: 4,
+    isList: false,
+    error: Yup.string().required(`Please enter First  Name !`)
+  },
+  {
+    id: "lastname",
+    label: "Last Name (*)",
+    type: 'text',
+    colSize: 4,
+    isList: false,
+    error: Yup.string().required(`Please enter Last  Name !`)
+  },
+  {
+    id: "email",
+    label: "Email Address (*)",
+    type: 'text',
+    isList: false,
+    colSize: 4,
+    error: Yup.string().required(`Please enter Email !`)
+  },
+  {
+    id: "phone",
+    label: "Phone Number (*)",
+    type: 'number',
+    isList: false,
+    colSize: 4,
+    error: Yup.number().required(`Please enter phone number !`)
+  },
+  {
+    id: "password",
+    label: "Password (*)",
+    type: 'password',
+    isList: false,
+    colSize: 4,
+    error: Yup.string().required(`Please enter password !`)
+  },
+  {
+    id: "latitude",
+    label: "Latitude (*)",
+    type: 'number',
+    isList: false,
+    colSize: 4,
+    error: Yup.number().required(`Please enter latitute of the shop !`)
+  },
+  {
+    id: "longitude",
+    label: "Longitude (*)",
+    type: 'number',
+    isList: false,
+    colSize: 4,
+    error: Yup.number().required(`Please enter longitute of the shop !`)
+  },
+  {
+    id: "error",
+    label: "Error (meters)",
+    type: 'number',
+    isList: false,
+    colSize: 4
   },
 ]
 
@@ -269,6 +381,11 @@ export const links = [
     access: ['admin']
   },
   {
+    link: 'add category',
+    label: 'add category',
+    access: ['admin']
+  },
+  {
     link: 'profile/basic info',
     label: 'profile',
     access: ['admin', 'seller', 'customer']
@@ -276,12 +393,17 @@ export const links = [
   {
     link: 'account',
     label: 'account',
-    access: ['admin', 'seller', 'customer']
+    access: ['admin', 'seller']
   },
   {
     link: 'products',
     label: 'products',
     access: ['admin', 'seller']
+  },
+  {
+    link: 'wish list',
+    label: 'wish list',
+    access: ['customer']
   }
 ]
 
@@ -296,7 +418,7 @@ export const authRoutes = [
   },
   {
     route: 'account',
-    access: ['admin', 'seller', 'customer']
+    access: ['admin', 'seller']
   },
   {
     route: 'products',
@@ -313,5 +435,13 @@ export const authRoutes = [
   {
     route: 'admin',
     access: ['admin']
+  },
+  {
+    route: 'add category',
+    access: ['admin']
+  },
+  {
+    route: 'wish list',
+    access: ['customer']
   }
 ]

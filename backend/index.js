@@ -176,31 +176,29 @@ app.post("/api/register", async (req, res) => {
                         (
                             "${register.firstname}",
                             "${register.lastname}",
-                            "${register.shopName}",
-                            "${register.shopPhoneNumber}",
-                            "${register.shopDescription}",
-                            "${register.shopStartTime}",
-                            "${register.shopEndTime}",
-                            "${register.gst}",
+                            "${register.role === 'seller' ? register.shopName : ""}",
+                            "${register.role === 'seller' ? register.shopPhoneNumber : ""}",
+                            "${register.role === 'seller' ? register.shopDescription : ""}",
+                            "${register.role === 'seller' ? register.shopStartTime : ""}",
+                            "${register.role === 'seller' ? register.shopEndTime : ""}",
+                            "${register.role === 'seller' ? register.gst : ""}",
                             "${register.phone}",
                             "${register.email}",
                             "${register.password}",
-                            "seller", 
-                            "false", 
+                            "${register.role}", 
+                            "${register.role === 'seller' ? 'false' : 'true'}", 
                             "${format(new Date(), "yyyy-MM-dd")}",
-                            "Pending",
+                            "${register.role === 'seller' ? "Pending" : "Approved"}",
                             "${register.error}",
                             "${register.latitude}",
                             "${register.longitude}",
-                            "${register.category}"
+                            "${register.role === 'seller' ? register.category : ""}"
                         );
                     `;
             await runQuery(query, db);
 
-            // await runQuery(query, db);
-
             res.status(200).send({
-                message: "Registration Process has been Initiated !",
+                message: `Registration Process has been ${register.role === 'seller' ? "Initiated" : "Completed"} !`,
             });
         }
     } catch (e) {
@@ -209,11 +207,53 @@ app.post("/api/register", async (req, res) => {
     }
 });
 
+app.get('/api/get_sellers', async (req, res) => {
+    try {
+        let query = `
+            select 
+                firstname, lastname, status, shopStartTime, shopEndTime, shopName, 
+                gst, latitude, longitude, error, shopPhoneNumber, propic, category,id
+            from 
+                Register
+            where
+                status="Approved" and 
+                role="seller";
+        `
+        const result = await getData(query, db)
+        res.status(200).send({
+            result: result,
+            message: "Seller Fetched Successfully !",
+        })
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
+
+app.get('/api/products', async (req, res) => {
+    try {
+        let query = `
+            select 
+                *
+            from 
+                products
+            limit 20;
+        `
+        const result = await getData(query, db)
+
+        res.status(200).send({
+            result: result,
+            message: "Products Fetched Successfully !",
+        })
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
+
 app.get('/api/get_seller/:id', async (req, res) => {
     try {
         const { id } = req.params
-        console.log(id)
-        // const location = await getLocation(ip);
         let query = `
             select 
                 firstname, lastname, status, shopStartTime, shopEndTime, shopName, 
@@ -241,8 +281,6 @@ app.get('/api/get_seller/:id', async (req, res) => {
 app.get('/api/get_products/:seller_id/:sub', async (req, res) => {
     try {
         const { seller_id, sub } = req.params;
-        // const { sub } = req.query
-        // console.log(sub)
         let query = `
             select 
                 title, description, mrp, discountedPrice, path, id, shop, category, subcategory
@@ -565,26 +603,28 @@ app.get('/api/get_seller_attributes', authMiddleware, async (req, res) => {
 app.post('/api/update_profile', authMiddleware, async (req, res) => {
     try {
         const { user } = req
-        let query = `select status from Register where id="${user?.id}"`
+        console.log(user)
+        let query = `select status from Register where id=${user?.id}`
         let result = await getData(query, db)
+        console.log(result)
         if (result[0].status === 'Approved') {
             const profile = req.body
             query = `
                 update 
                     Register
                 set
-                    firstname="${profile.firstname}",
-                    lastname="${profile.lastname}",
-                    phone=${profile.phone},
-                    shopStartTime="${profile.shopStartTime}",
-                    shopEndTime="${profile.shopEndTime}",
-                    shopName="${profile.shopName}",
-                    gst="${profile.gst}"
+                    firstname="${profile?.firstname}",
+                    lastname="${profile?.lastname}",
+                    phone=${profile?.phone},
+                    shopStartTime="${user?.role === 'customer' ? "" : profile?.shopStartTime}",
+                    shopEndTime="${user?.role === 'customer' ? "" : profile?.shopEndTime}",
+                    shopName="${user?.role === 'customer' ? "" : profile?.shopName}",
+                    gst="${user?.role === 'customer' ? "" : profile?.gst}"
                 where
-                    id=${profile.id};                    
+                    id=${user.id};                    
             `;
             await runQuery(query, db);
-            query = `select * from Register where id=${profile.id};`
+            query = `select * from Register where id=${user.id};`
             result = await getData(query, db);
             res.status(200).send({
                 result: result[0],
@@ -666,7 +706,6 @@ app.post('/api/update_profile_picture', authMiddleware, isApproved, async (req, 
                                     where
                                         id=${user.id};
                                 `
-                            console.log(query)
                             await runQuery(query, db)
                             res.status(200).send({
                                 message: "Profile Updation Successful !",
@@ -692,8 +731,12 @@ app.post('/api/update_profile_picture', authMiddleware, isApproved, async (req, 
                                 propic="${path.join('public', `${user.id}`, `profilepic`, `${file.name}`)}"
                             where
                                 id=${user.id};
-                        `
-                    console.log(query)
+                        `;
+                    console.log(`./assets/${user?.id}/profilepic/${user.propic.split('\\')[user.propic.split('\\')?.length - 1]}`)
+                    fs.rmSync(
+                        `./assets/${user?.id}/profilepic/${user.propic.split('\\')[user.propic.split('\\')?.length - 1]}`,
+                        { recursive: true, force: true }
+                    );
                     await runQuery(query, db)
                     res.status(200).send({
                         message: "Profile Updation Successful !",
@@ -703,6 +746,100 @@ app.post('/api/update_profile_picture', authMiddleware, isApproved, async (req, 
                 }
             })
 
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
+
+app.post('/api/add_category', authMiddleware, isAdmin, async (req, res) => {
+    try {
+        // const { user } = req
+        const file = req.files.file
+        const data = req.body
+        const pathname = path.join(process.cwd(), 'assets', 'category', `${data?.category}`);
+        if (!fs.existsSync(pathname)) {
+            console.log(pathname, file)
+            fs.mkdir(pathname, { recursive: true }, (err) => {
+                if (err) {
+                    res.status(500).send(`${file.name} was not saved !`);
+                    console.error(err)
+                    throw err
+                }
+                else {
+                    file.mv(path.join(pathname, `${file.name}`), async (err) => {
+                        if (err) {
+                            console.log(err)
+                            res.status(500).send(`${file.name} was not saved !`);
+                            return
+                        }
+                        else {
+                            let query = `
+                                    insert into 
+                                        categories (title,url) 
+                                        values 
+                                        ("${data?.category}","${path.join('public', `category`, `${data?.category}`, `${file.name}`)}");
+                                `
+                            await runQuery(query, db)
+
+                            res.status(200).send({
+                                message: "Category added Successful !",
+                                url: path.join('public', `category`, `${data?.category}`, `${file.name}`)
+                            })
+                            return
+                        }
+                    })
+                }
+            });
+        } else if (fs.existsSync(pathname))
+            res.status(403).send(`Category already exists !`);
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(`Server Error ! due to ${e.message}`);
+    }
+});
+
+app.post('/api/add_sub_category', authMiddleware, isAdmin, async (req, res) => {
+    try {
+        const file = req.files.file
+        const data = req.body
+        const pathname = path.join(process.cwd(), 'assets', 'subcategory', `${data?.category}`, `${data?.subcategory}`);
+        if (!fs.existsSync(pathname)) {
+            fs.mkdir(pathname, { recursive: true }, (err) => {
+                if (err) {
+                    res.status(500).send(`${file.name} was not saved !`);
+                    console.error(err)
+                    throw err
+                }
+                else {
+                    file.mv(path.join(pathname, `${file.name}`), async (err) => {
+                        if (err) {
+                            console.log(err)
+                            res.status(500).send(`${file.name} was not saved !`);
+                            return
+                        }
+                        else {
+                            let query = `
+                                    insert into 
+                                        subcategory (category,subcategory,url) 
+                                        values 
+                                        ("${data?.category}","${data?.subcategory}","${path.join('public', 'subcategory', `${data?.category}`, `${data?.subcategory}`, `${file.name}`)}");
+                                `
+                            await runQuery(query, db)
+
+                            res.status(200).send({
+                                message: "Sub Category added Successful !",
+                                url: path.join('public', 'subcategory', `${data?.category}`, `${data?.subcategory}`, `${file.name}`)
+                            })
+                            return
+                        }
+                    })
+                }
+            });
+        } else if (fs.existsSync(pathname))
+            res.status(403).send(`Category already exists !`);
 
     } catch (e) {
         console.log(e);

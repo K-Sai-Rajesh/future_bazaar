@@ -16,12 +16,20 @@ import BasicInfo from "../pages/profile/BasicInfo";
 import Security from "../pages/profile/Security";
 import NotFound from "../pages/NotFound";
 import SellerProducts from "../pages/SellerProducts";
+import WishList from "../pages/WishList";
+// import MainContent from "../pages/Landing/components/MainContent";
+import Main from "../pages/Landing/components/Main";
+import AddCategory from "../pages/AddCategory";
 
 export const routes = [
   {
     path: "",
     element: <Blog />,
     children: [
+      {
+        path: '',
+        element: <Main />
+      },
       {
         path: "404",
         element: <NotFound />,
@@ -83,6 +91,10 @@ export const routes = [
         ]
       },
       {
+        path: "wish list",
+        element: <WishList />,
+      },
+      {
         path: "add product",
         element: <AddNewProduct />,
       },
@@ -97,6 +109,10 @@ export const routes = [
       {
         path: "account",
         element: <Shop />
+      },
+      {
+        path: "add category",
+        element: <AddCategory />
       }
     ],
   },

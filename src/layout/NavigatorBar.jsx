@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Paper from '@mui/material/Paper';
-import { AccountCircleOutlined, DashboardOutlined, FolderCopyOutlined, ShieldMoonOutlined } from '@mui/icons-material';
+import { AccountCircleOutlined, AddCardTwoTone, DashboardOutlined, FolderCopyOutlined, ShieldMoonOutlined } from '@mui/icons-material';
 import { Typography } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getSession } from '../helpers/cookies';
@@ -19,6 +19,13 @@ export default function FixedBottomNavigation() {
             title: 'admin',
             sub: ['admin'],
             icon: <DashboardOutlined />,
+            access: ['admin']
+        },
+        {
+            link: 'add category',
+            title: 'add category',
+            sub: ['add category'],
+            icon: <AddCardTwoTone />,
             access: ['admin']
         },
         {
@@ -44,7 +51,6 @@ export default function FixedBottomNavigation() {
         },
     ].filter(link => link.access.includes(user.role))
     const path = pathname.split('/')[pathname.split('/').length - 1]
-    // console.log(path, pathVariable.map(item => item.title).indexOf(path))
     const [value, setValue] = React.useState(pathVariable.map(item => item.title).indexOf(path));
     const ref = React.useRef(null);
 
@@ -65,7 +71,6 @@ export default function FixedBottomNavigation() {
                     onChange={(event, newValue) => {
                         const path = pathVariable[newValue].link
                         setValue(newValue);
-                        console.log(newValue, path)
                         navigate(path === 'auth' ? "" : path)
                     }}
                 >
