@@ -200,9 +200,8 @@ export default function Main() {
         </>
     )
 }
-
+console.log(process.env.NODE_ENV)
 function RecipeReviewCard({ seller, navigate }) {
-    console.log(seller)
     return (
         <Card
             sx={{

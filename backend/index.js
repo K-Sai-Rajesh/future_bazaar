@@ -13,6 +13,17 @@ import { v4 as uuidv4 } from 'uuid';
 const app = new express();
 const secret_key = "future_bazaar";
 
+const front = [
+    'login',
+    'register',
+    'auth',
+    'auth/*',
+    'seller',
+    'seller/*',
+    'product',
+    'product/*'
+]
+
 const authMiddleware = async (req, res, next) => {
     try {
         const token = req.headers.authorization;
@@ -76,6 +87,10 @@ app.listen(8080, async () => {
 
 
 //--- routes not protected 
+
+app.get(front, (req, res) => {
+
+})
 
 app.get('/api/get_product/:id', async (req, res) => {
     try {
