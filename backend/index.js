@@ -14,14 +14,16 @@ const app = new express();
 const secret_key = "future_bazaar";
 
 const front = [
-    'login',
-    'register',
-    'auth',
-    'auth/*',
-    'seller',
-    'seller/*',
-    'product',
-    'product/*'
+    '/',
+    '/login',
+    '/register',
+    '/auth',
+    '/auth/*',
+    '/auth/profile',
+    '/seller',
+    '/seller/*',
+    '/product',
+    '/product/*'
 ]
 
 const authMiddleware = async (req, res, next) => {
@@ -70,6 +72,7 @@ const isApproved = async (req, res, next) => {
 }
 
 app.use(express.json());
+app.use(express.static(path.join(process.cwd(), "build")))
 app.use(cors());
 app.use("/public", express.static('assets'))
 app.use(fileUpload({
@@ -89,7 +92,7 @@ app.listen(8080, async () => {
 //--- routes not protected 
 
 app.get(front, (req, res) => {
-
+    res.sendFile(path.join(process.cwd(), "build", "index.html"))
 })
 
 app.get('/api/get_product/:id', async (req, res) => {

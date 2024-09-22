@@ -5,11 +5,10 @@ import { authRoutes } from "../helpers/features";
 
 export default function Auth() {
   const token = getCookieItem(CookiesNames?.ACCESS_TOKEN);
-  const { user } = getSession();
+  const user = getSession();
   const { pathname } = useLocation()
   const path = pathname.split('/')[pathname.split('/').length - 1].replace("%20", " ")
-  const isAuthorised = authRoutes.filter(link => path === link.route)[0].access.includes(user.role)
-
+  const isAuthorised = authRoutes.filter(link => path === link.route)[0].access.includes(user?.user?.role)
   return (
     <>
       {token ?
