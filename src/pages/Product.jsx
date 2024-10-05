@@ -7,6 +7,7 @@ import Carousel from 'react-material-ui-carousel'
 import ProductCard from "./ProductCard";
 import { WhatsApp } from "@mui/icons-material";
 import Copyright from "./CopyRight";
+import { config } from "../helpers/config";
 
 function Item({ path }) {
     return (
@@ -49,7 +50,7 @@ export default function Product() {
     async function getProductData(id) {
         try {
             const { payload } = await dispatch(GetProduct(id))
-            const paths = payload.result.map(item => `http://localhost:8080/${item.path}`)
+            const paths = payload.result.map(item => `${config.BASE_URL}${item.path}`)
             const keys = [
                 'title',
                 'description',

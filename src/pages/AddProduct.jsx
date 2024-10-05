@@ -10,6 +10,7 @@ import { CurrencyRupeeOutlined, DescriptionOutlined, DiscountOutlined, Inventory
 import { AddProduct, Category, EditProduct, GetProduct, SubCategory } from "../reducers/slices/seller";
 import CustomSelectField from "../common/CustomSelectField";
 import { useLocation, useNavigate } from "react-router-dom";
+import { config } from "../helpers/config";
 
 export default function AddNewProduct() {
     const fileTypes = ["png", "jpeg", "jpg"];
@@ -128,7 +129,7 @@ export default function AddNewProduct() {
         try {
             const { payload } = await dispatch(GetProduct(id))
             console.log(payload.result)
-            const paths = payload.result.map(item => `http://localhost:8080/${item.path}`)
+            const paths = payload.result.map(item => `${config.BASE_URL}${item.path}`)
             const ids = payload.result.map(ids => ids.id)
             const keys = [
                 'title', 'description', 'category', 'subcategory',

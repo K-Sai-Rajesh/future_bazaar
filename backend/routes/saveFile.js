@@ -8,7 +8,7 @@ export async function save(file, idx, path, title,
 ) {
     return new Promise((resolve, reject) => {
         try {
-            const pathname = path.join(process.cwd(), 'assets', `${username}`, `${productId}`)
+            const pathname = path.join(process.cwd(), 'Data', 'assets', `${username}`, `${productId}`)
             if (!fs.existsSync(pathname)) {
                 fs.mkdir(pathname, { recursive: true }, (err) => {
                     if (err) throw err;
@@ -112,7 +112,7 @@ export async function save(file, idx, path, title,
 export async function update(id, oldpath, file, idx, path, title, description, stock, mrp, discount, discountedPrice, username, category = "Cat", subcategory = "SubCat", db, shop, productId) {
     return new Promise(async (resolve, reject) => {
         try {
-            const pathname = path.join(process.cwd(), 'assets', `${username}`, `${productId}`)
+            const pathname = path.join(process.cwd(), 'Data', 'assets', `${username}`, `${productId}`)
             if (file === null) {
                 let query = `
                 update products 

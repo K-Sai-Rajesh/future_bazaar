@@ -102,7 +102,7 @@ export default function Seller() {
                     >
                         <Avatar
                             alt="Remy Sharp"
-                            src={user === null ? "" : `http://localhost:8080/${user.propic}`}
+                            src={user === null ? "" : `${config.BASE_URL}${user.propic}`}
                             sx={{
                                 width: 256,
                                 height: 256,
@@ -172,7 +172,7 @@ export default function Seller() {
                     display={'flex'}
                     rowGap={1}
                     flexDirection={'column'}
-                    // p={1}
+                // p={1}
                 >
                     <Stack
                         spacing={{ xs: 1, sm: 2 }}

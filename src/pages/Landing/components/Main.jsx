@@ -11,6 +11,7 @@ import CardContent from '@mui/material/CardContent';
 import IconButton from '@mui/material/IconButton';
 import { ShareLocationOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { config } from "../../../helpers/config";
 
 function Item({ path }) {
     return (
@@ -64,7 +65,7 @@ export default function Main() {
                 return result;
             }, {});
 
-            setProducts(Object.values(groupedObjects).map(product => ({ ...product[0], img: product.map(img => `http://localhost:8080/${img.path}`) })))
+            setProducts(Object.values(groupedObjects).map(product => ({ ...product[0], img: product.map(img => `${config.BASE_URL}${img.path}`) })))
 
         } catch (e) {
             console.error(e)
@@ -149,7 +150,7 @@ export default function Main() {
                                 </InputLabel>
                                 <Avatar
                                     alt="Remy Sharp"
-                                    src={`http://localhost:8080/${floor?.url}`}
+                                    src={`${config.BASE_URL}${floor?.url}`}
                                     sx={{
                                         width: 100,
                                         height: 100,
@@ -252,7 +253,7 @@ function RecipeReviewCard({ seller, navigate }) {
             />
             <CardMedia
                 component="img"
-                image={seller?.propic === null ? "https://img.freepik.com/free-vector/cost-saving-online-payment-money-transfer-financial-savings_335657-3105.jpg" : `http://localhost:8080/${seller?.propic}`} // === null ? "https://img.freepik.com/free-vector/shopping-store-icon-isolated-illustration_18591-82228.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1726790400&semt=ais_hybrid" : `http://localhost:8080/${seller?.propic}`}
+                image={seller?.propic === null ? "https://img.freepik.com/free-vector/cost-saving-online-payment-money-transfer-financial-savings_335657-3105.jpg" : `${config.BASE_URL}${seller?.propic}`} // === null ? "https://img.freepik.com/free-vector/shopping-store-icon-isolated-illustration_18591-82228.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1726790400&semt=ais_hybrid" : `config.BASE_URL/${seller?.propic}`}
                 alt="Paella dish"
             />
             <CardContent sx={{ display: 'flex', justifyContent: 'end', alignSelf: 'end' }}>

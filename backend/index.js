@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { db, jwt } from "./database.cjs";
 import { Login } from "./routes/login.js";
-import { getData, runQuery } from "./routes/common.js";
+import { getData, runQuery, tablesList } from "./routes/common.js";
 import { format } from "date-fns";
 import fileUpload from "express-fileupload";
 import { save, update } from "./routes/saveFile.js";
@@ -74,7 +74,7 @@ const isApproved = async (req, res, next) => {
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), "build")))
 app.use(cors());
-app.use("/public", express.static('assets'))
+app.use("/public", express.static('Data/assets'))
 app.use(fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 },
 }));
@@ -82,7 +82,33 @@ app.use(fileUpload({
 app.listen(8080, async () => {
     try {
         console.log("Server is started at port 8080 .");
-        // console.log()
+        db.all("SELECT name FROM sqlite_master WHERE type='table'", async (err, tables) => {
+            if (err) console.log(err)
+            else {
+                let query;
+                const Tables = tables.map(table => table.name)
+                if (tables.length === 0) {
+                    await Promise.all(tablesList.map(async table => {
+                            if (!Tables.includes(Object.keys(table)[0])) {
+                                query = Object.values(table)[0];
+                                await db.exec(query)
+                                return true
+                            }
+                        })
+                    );
+                    query = `insert into Register (firstname,lastname,shopName,shopPhoneNumber,shopDescription,shopStartTime,shopEndTime,gst,phone, email, userpassword,role,registered,appliedDate,status,error,latitude,longitude,category) VALUES ("firstname","lastname","shopName",7846574857,"shopDescription","9:00","10:00","gst",8756475847,"futurebazaar@gmail.com", "password","admin", "true", "2024-07-07", "Approved",1000,17.07464,76.03746,"Furniture");`
+                    await db.run(query)
+                } else {
+                    tablesList.forEach(async table => {
+                        if (!Tables.includes(Object.keys(table)[0])) {
+                            let query = Object.values(table)[0];
+                            const result = await db.exec(query)
+                            console.log(result)
+                        }
+                    })
+                }
+            }
+        });
     } catch (e) {
         console.log(e);
     }
@@ -369,12 +395,10 @@ app.get('/api/admin', authMiddleware, isAdmin, async (req, res) => {
     }
 });
 
-app.post('/api/seller_status_update', authMiddleware, async (req, res) => {
+app.post('/api/seller_status_update', authMiddleware, isAdmin, async (req, res) => {
     try {
-        const { user } = req
         const { id, status, email, password } = req.body
-        if (user.role === 'admin') {
-            let query = `
+        let query = `
                 update 
                     Register 
                 set 
@@ -383,9 +407,9 @@ app.post('/api/seller_status_update', authMiddleware, async (req, res) => {
                 where 
                     id="${id}"
             ;`;
-            await runQuery(query, db);
-            if (status === "Approved") {
-                query = `
+        await runQuery(query, db);
+        if (status === "Approved") {
+            query = `
                         insert into Login 
                         (username, email, password, role, status)
                         values
@@ -397,21 +421,16 @@ app.post('/api/seller_status_update', authMiddleware, async (req, res) => {
                             "${status}"
                         );
                     `;
-                await runQuery(query, db)
-            }
-            res.status(200).send(`Seller ${status} !`)
-        } else {
-            res.status(404).send({
-                message: "Not permitted for Operation !"
-            })
+            await runQuery(query, db)
         }
+        res.status(200).send(`Seller ${status} !`)
     } catch (e) {
         console.log(e);
         res.status(500).send(`Server Error ! due to ${e.message}`);
     }
 });
 
-app.post('/api/add_product', authMiddleware, async (req, res) => {
+app.post('/api/add_product', authMiddleware, isApproved, async (req, res) => {
     try {
         const { user } = req
         const { title, description, stock, mrp, discount, discountedPrice, category, subcategory } = req.body
@@ -440,7 +459,7 @@ app.post('/api/add_product', authMiddleware, async (req, res) => {
     }
 });
 
-app.post('/api/edit_product', authMiddleware, async (req, res) => {
+app.post('/api/edit_product', authMiddleware, isApproved, async (req, res) => {
     try {
         const { user } = req
         const { title, description, stock, mrp, discount, discountedPrice, category, subcategory, productId } = req.body
@@ -448,11 +467,10 @@ app.post('/api/edit_product', authMiddleware, async (req, res) => {
 
         const paths = req.body['paths[]'] ? req.body['paths[]'] : null
         const ids = req.body['id[]']
-        console.log(user.id, productId)
         if (user.role === 'seller' || user.role === 'admin') {
             if (files !== null)
                 fs.rmSync(
-                    `./assets/${path.join(`${user.id}`, `${productId}`)}`,
+                    `./Data/assets/${path.join(`${user.id}`, `${productId}`)}`,
                     { recursive: true, force: true }
                 );
             const arr = await Promise.all(ids.map(async (id, idx) => {
@@ -574,7 +592,7 @@ app.delete('/api/delete_product/:id', authMiddleware, async (req, res) => {
         const { user } = req
         const { id } = req.params
         if (user.role === 'seller' || user.role === 'admin') {
-            const __dirname = path.join('./', 'assets', `${user.id}`, `${id}`)
+            const __dirname = path.join('./', 'Data', 'assets', `${user.id}`, `${id}`)
             console.log(__dirname)
             fs.rmSync(
                 `./${__dirname}`,
@@ -699,8 +717,9 @@ app.post('/api/update_security', authMiddleware, isApproved, async (req, res) =>
 app.post('/api/update_profile_picture', authMiddleware, isApproved, async (req, res) => {
     try {
         const { user } = req
-        const pathname = path.join(process.cwd(), 'assets', `${user.id}`, `profilepic`);
+        const pathname = path.join(process.cwd(), 'Data', 'assets', `${user.id}`, `profilepic`);
         const file = req.files.propic
+        console.log(user)
         if (!fs.existsSync(pathname)) {
             fs.mkdir(pathname, { recursive: true }, (err) => {
                 if (err) {
@@ -724,6 +743,7 @@ app.post('/api/update_profile_picture', authMiddleware, isApproved, async (req, 
                                     where
                                         id=${user.id};
                                 `
+                            console.log(query)
                             await runQuery(query, db)
                             res.status(200).send({
                                 message: "Profile Updation Successful !",
@@ -750,9 +770,9 @@ app.post('/api/update_profile_picture', authMiddleware, isApproved, async (req, 
                             where
                                 id=${user.id};
                         `;
-                    console.log(`./assets/${user?.id}/profilepic/${user.propic.split('\\')[user.propic.split('\\')?.length - 1]}`)
+                    // console.log(`./assets/${user?.id}/profilepic/${user.propic.split('\\')[user.propic.split('\\')?.length - 1]}`)
                     fs.rmSync(
-                        `./assets/${user?.id}/profilepic/${user.propic.split('\\')[user.propic.split('\\')?.length - 1]}`,
+                        `./Data/assets/${user?.id}/profilepic/${user.propic.split('/')[user.propic.split('/')?.length - 1]}`,
                         { recursive: true, force: true }
                     );
                     await runQuery(query, db)
@@ -823,7 +843,7 @@ app.post('/api/add_sub_category', authMiddleware, isAdmin, async (req, res) => {
     try {
         const file = req.files.file
         const data = req.body
-        const pathname = path.join(process.cwd(), 'assets', 'subcategory', `${data?.category}`, `${data?.subcategory}`);
+        const pathname = path.join(process.cwd(), 'Data', 'assets', 'subcategory', `${data?.category}`, `${data?.subcategory}`);
         if (!fs.existsSync(pathname)) {
             fs.mkdir(pathname, { recursive: true }, (err) => {
                 if (err) {

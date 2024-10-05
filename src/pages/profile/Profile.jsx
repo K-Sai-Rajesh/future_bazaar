@@ -7,13 +7,14 @@ import { useDispatch } from "react-redux";
 import { updateprofilepic } from "../../reducers/slices/register";
 import { useState } from "react";
 import { getSession } from "../../helpers/cookies";
+import { config } from "../../helpers/config";
 
 export default function Profile() {
   const { user } = getSession()
   const { pathname } = useLocation()
   const dispatch = useDispatch()
   const path = pathname.split('/')[pathname.split('/').length - 1].replace("%20", " ")
-  const [propic, setPropic] = useState(user.propic === null ? logo : `http://localhost:8080/${user.propic}`)
+  const [propic, setPropic] = useState(user.propic === null ? logo : `${config.BASE_URL}${user.propic}`)
   const blogTheme = createTheme(getBlogTheme('light'));
   const navigate = useNavigate();
   const links = [
@@ -32,7 +33,7 @@ export default function Profile() {
       const { files } = e.target;
       const { payload } = await dispatch(updateprofilepic({ propic: files[0], user }))
       if (payload.url) {
-        setPropic(`http://localhost:8080/${payload.url}`)
+        setPropic(`${config.BASE_URL}${payload.url}`)
       }
     } catch (e) {
       console.error(e)

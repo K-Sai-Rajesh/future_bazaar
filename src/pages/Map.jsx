@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 
-export default function MapLocation() {
+export default function MyLocation() {
     // eslint-disable-next-line
     const { state } = useLocation()
     // eslint-disable-next-line
@@ -26,6 +26,7 @@ export default function MapLocation() {
             })
         }
     }, [])
+    
     return (
         <Box
             display={'flex'}
